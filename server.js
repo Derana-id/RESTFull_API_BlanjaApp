@@ -42,6 +42,7 @@ app.get('/', (req, res) =>
 );
 
 // main route
+app.use(require('./src/routes/auth.route'));
 app.use(require('./src/routes/user.route'));
 
 // 404 router
