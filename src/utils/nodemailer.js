@@ -13,11 +13,14 @@ module.exports = {
     new Promise((resolve, reject) => {
       let transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
+        port: 465,
+        secure: true,
         auth: {
           user: EMAIL_AUTH_STMP,
           pass: PASS_AUTH_STMP,
+        },
+        tls: {
+          rejectUnauthorized: false,
         },
       });
 
@@ -51,15 +54,18 @@ module.exports = {
         }
       });
     }),
-  resetPassword: (data) =>
+  reset: (data) =>
     new Promise((resolve, reject) => {
       let transporter = nodemailer.createTransport({
-        host: HOST_STMP,
-        port: PORT_STMP,
-        secure: false,
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
         auth: {
           user: EMAIL_AUTH_STMP,
           pass: PASS_AUTH_STMP,
+        },
+        tls: {
+          rejectUnauthorized: false,
         },
       });
 
@@ -68,10 +74,10 @@ module.exports = {
         hbs({
           viewEngine: {
             extname: '.html',
-            partialsDir: path.resolve('./src/templates/email'),
+            partialsDir: path.resolve('./src/templates/forgot-password'),
             defaultLayout: false,
           },
-          viewPath: path.resolve('./src/templates/email'),
+          viewPath: path.resolve('./src/templates/forgot-password'),
           extName: '.html',
         })
       );
