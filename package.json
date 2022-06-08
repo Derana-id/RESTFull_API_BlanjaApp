@@ -4,6 +4,8 @@
   "description": "Create a Node.js app for building e-commerce RESTful APIs using Express",
   "main": "server.js",
   "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -43,6 +45,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.7.5",
     "pg": "^8.7.3",
+    "pg-hstore": "^2.3.4",
     "redis": "^3.1.2",
     "sequelize": "^6.20.1",
     "socket.io": "^4.5.1",
