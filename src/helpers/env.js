@@ -18,8 +18,6 @@ module.exports = {
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRED: process.env.JWT_EXPIRED,
   // email
-  HOST_STMP: process.env.HOST_STMP,
-  PORT_STMP: process.env.PORT_STMP,
   EMAIL_AUTH_STMP: process.env.EMAIL_AUTH_STMP,
   PASS_AUTH_STMP: process.env.PASS_AUTH_STMP,
   EMAIL_FROM: process.env.EMAIL_FROM,
