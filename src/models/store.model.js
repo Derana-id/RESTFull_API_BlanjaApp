@@ -1,33 +1,33 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/pg');
 
-const User = db.define(
-  'users',
+const Store = db.define(
+  'store',
   {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
     },
-    email: {
+    user_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    password: {
+    store_name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    level: {
-      type: DataTypes.INTEGER,
+    store_phone: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
-    token: {
-      type: DataTypes.STRING,
+    store_description: {
+      type: DataTypes.TEXT,
       allowNull: true,
-    },
-    is_verified: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
     },
   },
   {
@@ -35,4 +35,4 @@ const User = db.define(
   }
 );
 
-module.exports = User;
+module.exports = Store;
