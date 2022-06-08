@@ -1,0 +1,52 @@
+{
+  "name": "e-commerce-api",
+  "version": "1.0.0",
+  "description": "Create a Node.js app for building e-commerce RESTful APIs using Express",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Derana-id/RESTFull_API_BlanjaApp.git"
+  },
+  "keywords": [
+    "API",
+    "Node.js",
+    "Express.js",
+    "PostgreSQL",
+    "Sequelize",
+    "Socket.io"
+  ],
+  "contributors": [
+    "Muhammad Hakam Faza",
+    "Hanifudin Alfauzi",
+    "Nur Muhammad Alif Putra Setiawan",
+    "Rif'an Hidayatulloh",
+    "Bagus Dzikri Hidayat"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Derana-id/RESTFull_API_BlanjaApp/issues"
+  },
+  "homepage": "https://github.com/Derana-id/RESTFull_API_BlanjaApp#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "express-validator": "^6.14.1",
+    "helmet": "^5.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.7.5",
+    "pg": "^8.7.3",
+    "redis": "^3.1.2",
+    "sequelize": "^6.20.1",
+    "socket.io": "^4.5.1",
+    "uuid": "^8.3.2",
+    "xss-clean": "^0.1.1"
+  }
+}
