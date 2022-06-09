@@ -1,13 +1,13 @@
-<br />
+<div id="top"></div>
 <p align="center">
 <div align="center">
-  <img height="150" src=""/>
+  <img height="150" src="./public/Logo.png"/>
 </div>
   <h3 align="center">Blanja : Backend E-Commerce</h3>
   <p align="center">
     <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp"><strong>Explore the docs »</strong></a>
     <br /><br />
-    <a href="#">View Demo</a>
+    <a href="#">View Web Service</a>
     ·
     <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp/issues">Report Bug</a>
     ·
@@ -38,7 +38,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
--
+Create a Node.js app for building e-commerce RESTful APIs using Express.
 
 ### Built With
 
@@ -81,10 +81,10 @@ npm install
 ```
 - Make a new database and import [blanja.sql](./blanja.sql)
 - <a href="#setup-env-example">Setup .env</a>
-- Starting application
-```
-npm run serve
-```
+- Type ` npm run dev` To Start Development
+- Type ` npm run start` To Start Production
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Setup .env example
 
@@ -121,11 +121,15 @@ GMAIL_REFRESH_TOKEN = [GMAIL_REFRESH_TOKEN]
 
 ```
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## REST API
 
 You can view my Postman collection [here]()
 </br>
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/3b5e01421434a5ef05ae?action=collection%2Fimport)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -138,12 +142,12 @@ Contributions are what make the open source community such an amazing place to b
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Related Project
-:rocket: [`Backend Blanja`](https://github.com/aryairama/arkademy-express-TokoKu)
+:rocket: [`Backend Blanja`]()
 
-:rocket: [`Frontend Blanja`](https://github.com/aryairama/arkademy-react-TokoKu)
+:rocket: [`Frontend Blanja`]()
 
 :rocket: [`Demo Blanja`]()
 
@@ -175,8 +179,3 @@ Contributions are what make the open source community such an amazing place to b
 Distributed under the [MIT](/LICENSE) License.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-
-
