@@ -45,10 +45,10 @@ Create a Node.js app for building e-commerce RESTful APIs using Express.
 - [Node.js](https://nodejs.org/en/)
 - [Express.js](https://expressjs.com/)
 - [JSON Web Tokens](https://jwt.io/)
-- [Nodemailer]('https://nodemailer.com/about/')
-- [Socket.io]()
-- [Sequelize]()
-- [PostgreSQL]()
+- [Nodemailer](https://nodemailer.com/about/)
+- [Socket.io](https://socket.io/)
+- [Sequelize](https://sequelize.org/)
+- [PostgreSQL](https://www.postgresql.org/)
 - and other
 
 <!-- GETTING STARTED -->
@@ -58,7 +58,7 @@ Create a Node.js app for building e-commerce RESTful APIs using Express.
 
 This is an example of how to list things you need to use the software and how to install them.
 
-* [nodejs](https://nodejs.org/en/download/)
+* [Node.js](https://nodejs.org/en/download/)
 
 ### Requirements
 * [Node.js](https://nodejs.org/en/)
@@ -125,7 +125,7 @@ GMAIL_REFRESH_TOKEN = [GMAIL_REFRESH_TOKEN]
 
 ## REST API
 
-You can view my Postman collection [here]()
+You can view my Postman collection [here](https://app.getpostman.com/run-collection/19659051-7f818db8-a545-43c6-ba16-2fdd859ce43b?action=collection%2Ffork&collection-url=entityId%3D19659051-7f818db8-a545-43c6-ba16-2fdd859ce43b%26entityType%3Dcollection%26workspaceId%3D2d0c24df-fbb7-405f-93af-c4ef984f8428#?env%5BDevelopment%5D=W3sia2V5IjoiZGV2IiwidmFsdWUiOiJodHRwOi8vbG9jYWxob3N0OjQwMDAvIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQifV0=)
 </br>
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/3b5e01421434a5ef05ae?action=collection%2Fimport)
 
