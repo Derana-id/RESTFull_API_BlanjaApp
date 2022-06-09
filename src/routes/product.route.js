@@ -7,6 +7,7 @@ const validation = require('../middlewares/validation');
 const upload = require('../middlewares/uploadProduct');
 const {
   getAllProduct,
+  getProductByUser,
   getProductById,
   createProduct,
   updateProduct,
@@ -16,6 +17,7 @@ const {
 const router = express.Router();
 router
   .get('/product', jwtAuth, getAllProduct)
+  .get('/product/user', jwtAuth, isSeller, getProductByUser)
   .get('/product/:id', jwtAuth, getProductById)
   .post(
     '/product',
