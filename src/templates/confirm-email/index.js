@@ -178,7 +178,7 @@ const index = (link, name) => {
                                                       <tr>
                                                           <td style="width:64px;">
 
-                                                              <img height="auto" src="https://i.imgur.com/uTiGmPF.png" style="border:0;display:block;outline:none;text-decoration:none;width:100%;" width="64" />
+                                                              <img height="auto" src="https://i.imgur.com/Igd3EmY.png" style="border:0;display:block;outline:none;text-decoration:none;width:100%;" width="64" />
 
                                                           </td>
                                                       </tr>
