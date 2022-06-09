@@ -1,7 +1,7 @@
 const express = require('express');
 
 const jwtAuth = require('../middlewares/jwtAuth');
-const { isBuyer, isAdmin } = require('../middlewares/authorization');
+const { isBuyer } = require('../middlewares/authorization');
 const { cart } = require('../validations/cart.validation');
 const validation = require('../middlewares/validation');
 const {
