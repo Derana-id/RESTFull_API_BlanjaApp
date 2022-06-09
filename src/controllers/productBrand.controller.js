@@ -1,4 +1,4 @@
-const ProductBrand = require('../models/productBrand');
+const ProductBrand = require('../models/product_brand');
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 const deleteFile = require('../utils/deleteFile');

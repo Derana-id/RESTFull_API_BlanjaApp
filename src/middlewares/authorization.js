@@ -1,4 +1,4 @@
-const User = require('../models/user.model');
+const User = require('../models/user');
 const { failed } = require('../helpers/response');
 
 module.exports = {

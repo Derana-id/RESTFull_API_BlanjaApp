@@ -48,6 +48,7 @@ app.use(require('./src/routes/category.route'));
 app.use(require('./src/routes/productBrand.route'));
 app.use(require('./src/routes/profile.route'));
 app.use(require('./src/routes/store.route'));
+app.use(require('./src/routes/product.route'));
 
 // 404 router
 app.use((req, res) => {
