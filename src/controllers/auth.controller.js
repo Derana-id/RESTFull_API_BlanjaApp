@@ -7,8 +7,11 @@ const { success, failed } = require('../helpers/response');
 const User = require('../models/user.model');
 const Profile = require('../models/profile.model');
 const Store = require('../models/store.model');
-const { APP_NAME, EMAIL_FROM, API_URL } = require('../helpers/env');
-const { activation, reset } = require('../utils/nodemailer');
+const sendEmail = require('../utils/sendEmail');
+const { APP_NAME, EMAIL_FROM, API_URL, APP_CLIENT } = require('../helpers/env');
+const activateAccount = require('../templates/confirm-email');
+const resetAccount = require('../templates/reset-password');
+const { userInfo } = require('os');
 
 module.exports = {
   registerBuyer: async (req, res) => {
@@ -52,19 +55,14 @@ module.exports = {
       await User.create(user);
       await Profile.create(profile);
 
-      const template = {
+      // send email for activate account
+      const templateEmail = {
         from: `"${APP_NAME}" <${EMAIL_FROM}>`,
-        to: email,
-        subject: 'Please Confirm Your Account',
-        text: 'Confirm Your email Blanja Job Account',
-        template: 'index',
-        context: {
-          url: `${API_URL}auth/activation/token=${token}`,
-          name,
-        },
+        to: req.body.email.toLowerCase(),
+        subject: 'Activate Your Account!',
+        html: activateAccount(`${API_URL}auth/activation/${token}`),
       };
-
-      await activation(template);
+      sendEmail(templateEmail);
 
       return success(res, {
         code: 201,
@@ -136,19 +134,16 @@ module.exports = {
       await User.create(user);
       await Store.create(store);
 
-      const template = {
-        from: `"${APP_NAME}" <${EMAIL_FROM}>`,
-        to: email,
-        subject: 'Please Confirm Your Account',
-        text: 'Confirm Your Email Blanja Job Account',
-        template: 'index',
-        context: {
-          url: `${API_URL}auth/activation/token=${token}`,
-          name,
-        },
-      };
+      console.log(name);
 
-      await activation(template);
+      // send email for activate account
+      const templateEmail = {
+        from: `"${APP_NAME}" <${EMAIL_FROM}>`,
+        to: req.body.email.toLowerCase(),
+        subject: 'Activate Your Account!',
+        html: activateAccount(`${API_URL}auth/activation/${token}`, name),
+      };
+      sendEmail(templateEmail);
 
       return success(res, {
         code: 201,
@@ -163,7 +158,50 @@ module.exports = {
       });
     }
   },
-  login: async (req, res) => {
+  activation: async (req, res) => {
+    try {
+      const { token } = req.params;
+      const user = await User.findAll({
+        where: {
+          token,
+        },
+      });
+
+      if (!user.length) {
+        res.send(`
+        <div>
+          <h1>Activation Failed</h1>
+          <h3>Token invalid</h3>
+        </div>`);
+        return;
+      }
+
+      await User.update(
+        {
+          token: null,
+          is_verified: 1,
+        },
+        {
+          where: {
+            token,
+          },
+        }
+      );
+      res.send(`
+      <div>
+        <h1>Activation Success!</h1>
+        <h3>You can login now!</h3>
+      </div>
+      `);
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  loginAccount: async (req, res) => {
     try {
       const { email, password } = req.body;
       const user = await User.findAll({
@@ -173,11 +211,12 @@ module.exports = {
       });
 
       // if user exists
-      if (user.rowCount) {
-        const match = await bcrypt.compare(password, user.rows[0].password);
+      if (user.length) {
+        const match = await bcrypt.compare(password, user[0].password);
         // if password correct
         if (match) {
-          const jwt = jwtToken(user.rows[0]);
+          const userId = user[0].id;
+          const jwt = jwtToken({ userId });
           return success(res, {
             code: 200,
             message: 'Login Sucess',
@@ -209,30 +248,34 @@ module.exports = {
 
       if (user.length) {
         const verifyToken = crypto.randomBytes(30).toString('hex');
-        await User.update(token, {
-          where: {
-            id: user[0].id,
+        await User.update(
+          {
+            token: verifyToken,
           },
-        });
+          {
+            where: {
+              id: user[0].id,
+            },
+          }
+        );
 
-        const template = {
+        // send email for reset password
+        const templateEmail = {
           from: `"${APP_NAME}" <${EMAIL_FROM}>`,
-          to: email,
-          subject: 'Please Confirm Your Reset Password',
-          text: 'Confirm Your Reset Password Blanja Job Account',
-          template: 'index',
-          context: {
-            url: `${API_URL}auth/reset/token=${token}`,
-          },
+          to: req.body.email.toLowerCase(),
+          subject: 'Reset Your Password!',
+          html: resetAccount(
+            `${APP_CLIENT}auth/reset/${verifyToken}`,
+            `${API_URL}uploads/users/${user[0].photo}`
+          ),
         };
-
-        await reset(template);
+        sendEmail(templateEmail);
       }
 
       return success(res, {
         code: 200,
         message: 'Forgot Password Sucess',
-        token: jwt,
+        data: null,
       });
     } catch (error) {
       return failed(res, {
@@ -259,8 +302,11 @@ module.exports = {
         });
       }
 
+      const { password } = req.body;
+      const hashPassword = await bcrypt.hash(password, 10);
       await User.update(
         {
+          password: hashPassword,
           token: null,
         },
         {

@@ -10,9 +10,9 @@ module.exports = {
         },
       });
 
-      if (!user.rowCount) {
+      if (!user.length) {
         next();
-      } else if (user.rows[0].is_verified) {
+      } else if (user[0].is_verified) {
         next();
       } else {
         failed(res, {
@@ -26,6 +26,28 @@ module.exports = {
         code: 500,
         message: error.message,
         error: 'Internal Server Error',
+      });
+    }
+  },
+  isSeller: (req, res, next) => {
+    if (req.APP_DATA.tokenDecoded.level === 1) {
+      next();
+    } else {
+      failed(res, {
+        code: 403,
+        message: "You don't have permission!",
+        error: 'Forbidden',
+      });
+    }
+  },
+  isBuyer: (req, res, next) => {
+    if (req.APP_DATA.tokenDecoded.level === 2) {
+      next();
+    } else {
+      failed(res, {
+        code: 403,
+        message: "You don't have permission!",
+        error: 'Forbidden',
       });
     }
   },
