@@ -12,7 +12,7 @@ module.exports = {
       return success(res, {
         code: 200,
         message: `Success get user by id`,
-        data: user.rows,
+        data: user[0],
       });
     } catch (error) {
       return failed(res, {
