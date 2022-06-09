@@ -1,6 +1,8 @@
 const express = require('express');
 const {
+  getAllmyAddress,
   getAllAddress,
+  getAddressById,
   insertAddress,
   updateAddress,
   deleteAddress,
@@ -16,23 +18,25 @@ const { isBuyer } = require('../middlewares/authorization');
 const router = express.Router();
 
 router
-  .get('/address/:userId', getAllAddress)
+  .get('/myaddress', jwtAuth, isBuyer, getAllmyAddress)
+  .get('/address/:userId', jwtAuth, getAllAddress)
+  .get('/address/detail/:id', jwtAuth, getAddressById)
   .post(
     '/address',
+    jwtAuth,
+    isBuyer,
     insertValidation,
     validation,
-    jwtAuth,
-    // isBuyer,
     insertAddress
   )
   .put(
     '/address',
+    jwtAuth,
+    isBuyer,
     updateValidation,
     validation,
-    jwtAuth,
-    // isBuyer,
     updateAddress
   )
-  .put('/address/:id', deleteAddress);
+  .put('/address/:id', jwtAuth, isBuyer, deleteAddress);
 
 module.exports = router;

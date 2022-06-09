@@ -15,16 +15,18 @@ const {
 const validation = require('../middlewares/validation');
 
 const jwtAuth = require('../middlewares/jwtAuth');
-const {} = require('../middlewares/authorization');
+const { isAdmin } = require('../middlewares/authorization');
 const categoryUpload = require('../middlewares/categoryUpload');
 
 const router = express.Router();
 
 router
-  .get('/category', getAllCategory)
-  .get('/category/:id', getCategoryId)
+  .get('/category', jwtAuth, isAdmin, getAllCategory)
+  .get('/category/:id', jwtAuth, isAdmin, getCategoryId)
   .post(
     '/category',
+    jwtAuth,
+    isAdmin,
     categoryUpload,
     insertValidation,
     validation,
@@ -32,11 +34,20 @@ router
   )
   .put(
     '/category/:id',
+    jwtAuth,
+    isAdmin,
     categoryUpload,
     updateValidation,
     validation,
     updateCategory
   )
-  .put('/category/delete/:id', deleteValidation, validation, deleteCategory);
+  .put(
+    '/category/delete/:id',
+    jwtAuth,
+    isAdmin,
+    deleteValidation,
+    validation,
+    deleteCategory
+  );
 
 module.exports = router;

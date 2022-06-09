@@ -3,6 +3,35 @@ const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 
 module.exports = {
+  getAllmyAddress: async (req, res) => {
+    try {
+      const userId = req.APP_DATA.tokenDecoded.id;
+      const result = await Address.findAll({
+        where: {
+          user_id: userId,
+          is_active: 1,
+        },
+      });
+      if (!result.length) {
+        return failed(res, {
+          code: 409,
+          message: 'Addres not found',
+          error: 'Get All Failed',
+        });
+      }
+      return success(res, {
+        code: 200,
+        message: `Success get all address by id ${userId}`,
+        data: result,
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
   getAllAddress: async (req, res) => {
     try {
       const userId = req.params.userId;
@@ -32,26 +61,23 @@ module.exports = {
       });
     }
   },
-  // getAddressById: async (req, res) => {
-  //   try {
-  //     const result = await Address.findAll({
-  //       where: {
-  //         id: req.params.id,
-  //       },
-  //     });
-  //     return success(res, {
-  //       code: 200,
-  //       message: `Success get address by id ${req.params.id}`,
-  //       data: result.rows,
-  //     });
-  //   } catch (error) {
-  //     return failed(res, {
-  //       code: 500,
-  //       message: error.message,
-  //       error: 'Internal Server Error',
-  //     });
-  //   }
-  // },
+  getAddressById: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const result = await Address.findByPk(id);
+      return success(res, {
+        code: 200,
+        message: `Success get address by id ${id}`,
+        data: result,
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
   insertAddress: async (req, res) => {
     try {
       const id = uuidv4();

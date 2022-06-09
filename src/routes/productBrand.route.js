@@ -15,16 +15,39 @@ const {
 const validation = require('../middlewares/validation');
 
 const jwtAuth = require('../middlewares/jwtAuth');
-// const {} = require('../middlewares/authorization');
+const { isAdmin } = require('../middlewares/authorization');
 const brandUpload = require('../middlewares/productBrandUpload');
 
 const router = express.Router();
 
 router
-  .get('/brand', getAllBrand)
-  .get('/brand/:id', getBrandId)
-  .post('/brand', brandUpload, insertValidation, validation, insertBrand)
-  .put('/brand/:id', brandUpload, updateValidation, validation, updateBrand)
-  .put('/brand/delete/:id', deleteValidation, validation, deleteBrand);
+  .get('/brand', jwtAuth, isAdmin, getAllBrand)
+  .get('/brand/:id', jwtAuth, isAdmin, getBrandId)
+  .post(
+    '/brand',
+    jwtAuth,
+    isAdmin,
+    brandUpload,
+    insertValidation,
+    validation,
+    insertBrand
+  )
+  .put(
+    '/brand/:id',
+    jwtAuth,
+    isAdmin,
+    brandUpload,
+    updateValidation,
+    validation,
+    updateBrand
+  )
+  .put(
+    '/brand/delete/:id',
+    jwtAuth,
+    isAdmin,
+    deleteValidation,
+    validation,
+    deleteBrand
+  );
 
 module.exports = router;
