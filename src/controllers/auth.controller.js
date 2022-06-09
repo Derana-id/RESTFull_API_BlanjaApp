@@ -40,7 +40,7 @@ module.exports = {
         id,
         email,
         password: hashPassword,
-        level: 1,
+        level: 2,
         token,
         is_verified: 0,
       };
@@ -117,7 +117,7 @@ module.exports = {
         id,
         email,
         password: hashPassword,
-        level: 2,
+        level: 1,
         token,
         is_verified: 0,
       };
@@ -215,8 +215,10 @@ module.exports = {
         const match = await bcrypt.compare(password, user[0].password);
         // if password correct
         if (match) {
-          const userId = user[0].id;
-          const jwt = jwtToken({ userId });
+          const jwt = jwtToken({
+            id: user[0].id,
+            level: user[0].level,
+          });
           return success(res, {
             code: 200,
             message: 'Login Sucess',

@@ -29,6 +29,10 @@ const Store = db.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    photo: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   },
   {
     freezeTableName: true,

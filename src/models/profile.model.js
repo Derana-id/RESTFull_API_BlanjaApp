@@ -22,7 +22,7 @@ const Profile = db.define(
       allowNull: true,
     },
     gender: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: true,
     },
     birth: {
