@@ -41,13 +41,6 @@ router
     validation,
     updateBrand
   )
-  .put(
-    '/brand/delete/:id',
-    jwtAuth,
-    isAdmin,
-    deleteValidation,
-    validation,
-    deleteBrand
-  );
+  .put('/brand/delete/:id', jwtAuth, isAdmin, deleteBrand);
 
 module.exports = router;

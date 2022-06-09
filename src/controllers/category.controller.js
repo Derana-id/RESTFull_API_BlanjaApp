@@ -1,6 +1,7 @@
 const Category = require('../models/category');
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
+const deleteFile = require('../utils/deleteFile');
 
 module.exports = {
   getAllCategory: async (req, res) => {
@@ -126,9 +127,8 @@ module.exports = {
   deleteCategory: async (req, res) => {
     try {
       const id = req.params.id;
-      const { isActive } = req.body;
       const data = {
-        is_active: isActive,
+        is_active: 0,
       };
       const result = await Category.update(data, {
         where: {
@@ -142,15 +142,9 @@ module.exports = {
           error: 'Delete Failed',
         });
       }
-      let message;
-      if (isActive === 1) {
-        message = 'active category';
-      } else {
-        message = 'delete category';
-      }
       return success(res, {
         code: 200,
-        message: `Success ${message}`,
+        message: `Success delete category`,
         data: [],
       });
     } catch (error) {

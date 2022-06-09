@@ -41,13 +41,6 @@ router
     validation,
     updateCategory
   )
-  .put(
-    '/category/delete/:id',
-    jwtAuth,
-    isAdmin,
-    deleteValidation,
-    validation,
-    deleteCategory
-  );
+  .put('/category/delete/:id', jwtAuth, isAdmin, deleteCategory);
 
 module.exports = router;

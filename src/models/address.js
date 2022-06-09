@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const db = require('../config/pg');
 
 const Address = db.define(
-  'alamat',
+  'domicile',
   {
     id: {
       type: DataTypes.UUID,
