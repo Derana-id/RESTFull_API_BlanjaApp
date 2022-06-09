@@ -45,6 +45,7 @@ app.get('/', (req, res) =>
 app.use(require('./src/routes/auth.route'));
 app.use(require('./src/routes/profile.route'));
 app.use(require('./src/routes/store.route'));
+app.use(require('./src/routes/product.route'));
 
 // 404 router
 app.use((req, res) => {
