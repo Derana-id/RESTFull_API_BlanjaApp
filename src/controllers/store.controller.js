@@ -1,5 +1,5 @@
-const User = require('../models/user.model');
-const Store = require('../models/store.model');
+const User = require('../models/user');
+const Store = require('../models/store');
 const { success, failed } = require('../helpers/response');
 const deleteFile = require('../utils/deleteFile');
 
