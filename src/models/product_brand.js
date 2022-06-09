@@ -17,6 +17,10 @@ const ProductBrand = db.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    is_active: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
   {
     freezeTableName: true,
