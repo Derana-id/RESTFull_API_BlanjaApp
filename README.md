@@ -31,8 +31,8 @@
 - [REST API](#rest-api)
 - [Contributing](#contributing)
 - [Related Project](#related-project)
-- [Contact](#contact)
-
+- [Contributors](#contributors)
+- [License](#license)
 
 
 <!-- ABOUT THE PROJECT -->
@@ -145,11 +145,17 @@ Contributions are what make the open source community such an amazing place to b
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Related Project
-:rocket: [`Backend Blanja`]()
+:rocket: [`Backend Blanja`](https://github.com/Derana-id/RESTFull_API_BlanjaApp)
 
-:rocket: [`Frontend Blanja`]()
+:rocket: [`Frontend Blanja`](https://github.com/Derana-id/Front-End-BelanjaApp)
+
+:rocket: [`Frontend Blanja Admin`](https://github.com/Derana-id/Front-End-Admin)
+
+:rocket: [`Web Service`]()
 
 :rocket: [`Demo Blanja`]()
+
+:rocket: [`Demo Blanja Admin`]()
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
