@@ -5,7 +5,7 @@
 -- Dumped from database version 14.2
 -- Dumped by pg_dump version 14.2
 
--- Started on 2022-06-09 23:18:53
+-- Started on 2022-06-10 00:59:52
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -245,6 +245,8 @@ CREATE TABLE public.transaction (
     address text,
     recipient_name character varying(255),
     recipient_phone character varying(50),
+    is_primary integer,
+    is_active integer,
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone
 );
@@ -545,7 +547,7 @@ ALTER TABLE ONLY public.users
     ADD CONSTRAINT user_pkey PRIMARY KEY (id);
 
 
--- Completed on 2022-06-09 23:19:17
+-- Completed on 2022-06-10 00:59:57
 
 --
 -- PostgreSQL database dump complete
