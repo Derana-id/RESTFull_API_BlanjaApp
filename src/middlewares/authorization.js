@@ -29,6 +29,17 @@ module.exports = {
       });
     }
   },
+  isAdmin: (req, res, next) => {
+    if (req.APP_DATA.tokenDecoded.level === 0) {
+      next();
+    } else {
+      failed(res, {
+        code: 403,
+        message: "You don't have permission!",
+        error: 'Forbidden',
+      });
+    }
+  },
   isSeller: (req, res, next) => {
     if (req.APP_DATA.tokenDecoded.level === 1) {
       next();
