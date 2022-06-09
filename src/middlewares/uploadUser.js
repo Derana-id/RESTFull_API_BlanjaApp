@@ -35,7 +35,7 @@ const multerUpload = multer({
 });
 
 const uploadUser = (req, res, next) => {
-  const multerSingle = multerUpload.single('avatar');
+  const multerSingle = multerUpload.single('photo');
   multerSingle(req, res, (err) => {
     if (err) {
       failed(res, {

@@ -5,7 +5,7 @@
 -- Dumped from database version 14.2
 -- Dumped by pg_dump version 14.2
 
--- Started on 2022-06-08 11:43:51
+-- Started on 2022-06-09 11:33:12
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -23,7 +23,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 212 (class 1259 OID 84998)
+-- TOC entry 211 (class 1259 OID 84998)
 -- Name: address; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -43,7 +43,7 @@ CREATE TABLE public.address (
 ALTER TABLE public.address OWNER TO postgres;
 
 --
--- TOC entry 214 (class 1259 OID 85012)
+-- TOC entry 212 (class 1259 OID 85012)
 -- Name: cart; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -58,7 +58,7 @@ CREATE TABLE public.cart (
 ALTER TABLE public.cart OWNER TO postgres;
 
 --
--- TOC entry 217 (class 1259 OID 85027)
+-- TOC entry 215 (class 1259 OID 85027)
 -- Name: category; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -88,7 +88,7 @@ CREATE TABLE public.chat (
 ALTER TABLE public.chat OWNER TO postgres;
 
 --
--- TOC entry 218 (class 1259 OID 85034)
+-- TOC entry 216 (class 1259 OID 85034)
 -- Name: product; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -102,14 +102,16 @@ CREATE TABLE public.product (
     is_new integer,
     description text,
     stock integer,
-    rating integer
+    rating integer,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
 );
 
 
 ALTER TABLE public.product OWNER TO postgres;
 
 --
--- TOC entry 222 (class 1259 OID 85054)
+-- TOC entry 220 (class 1259 OID 85054)
 -- Name: product_brand; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -123,7 +125,7 @@ CREATE TABLE public.product_brand (
 ALTER TABLE public.product_brand OWNER TO postgres;
 
 --
--- TOC entry 221 (class 1259 OID 85049)
+-- TOC entry 219 (class 1259 OID 85049)
 -- Name: product_color; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -131,14 +133,16 @@ CREATE TABLE public.product_color (
     id uuid NOT NULL,
     product_id uuid,
     color_name character varying(50),
-    color_value character varying(50)
+    color_value character varying(50),
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
 );
 
 
 ALTER TABLE public.product_color OWNER TO postgres;
 
 --
--- TOC entry 220 (class 1259 OID 85044)
+-- TOC entry 218 (class 1259 OID 85044)
 -- Name: product_image; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -152,64 +156,63 @@ CREATE TABLE public.product_image (
 ALTER TABLE public.product_image OWNER TO postgres;
 
 --
--- TOC entry 219 (class 1259 OID 85041)
+-- TOC entry 217 (class 1259 OID 85041)
 -- Name: product_size; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.product_size (
-    id uuid,
+    id uuid NOT NULL,
     product_id uuid,
-    size character varying(2)
+    size character varying(2),
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
 );
 
 
 ALTER TABLE public.product_size OWNER TO postgres;
 
 --
--- TOC entry 211 (class 1259 OID 84991)
+-- TOC entry 221 (class 1259 OID 85071)
 -- Name: profile; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.profile (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
+    name character varying(255),
     phone character varying(50),
     gender integer,
     birth date,
-    photo character varying
+    photo character varying,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
 );
 
 
 ALTER TABLE public.profile OWNER TO postgres;
 
 --
--- TOC entry 3400 (class 0 OID 0)
--- Dependencies: 211
--- Name: COLUMN profile.gender; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.profile.gender IS '0 = Male
-1 = Integer';
-
-
---
--- TOC entry 213 (class 1259 OID 85005)
+-- TOC entry 222 (class 1259 OID 85081)
 -- Name: store; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.store (
     id uuid NOT NULL,
     user_id uuid,
+    name character varying(255),
     store_name character varying(255),
     store_phone character varying(50),
-    store_description text
+    store_description text,
+    photo character varying(255),
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
 );
 
 
 ALTER TABLE public.store OWNER TO postgres;
 
 --
--- TOC entry 215 (class 1259 OID 85017)
+-- TOC entry 213 (class 1259 OID 85017)
 -- Name: transaction; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -225,14 +228,16 @@ CREATE TABLE public.transaction (
     postal_code integer,
     address text,
     recipient_name character varying(255),
-    recipient_phone character varying(50)
+    recipient_phone character varying(50),
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
 );
 
 
 ALTER TABLE public.transaction OWNER TO postgres;
 
 --
--- TOC entry 216 (class 1259 OID 85022)
+-- TOC entry 214 (class 1259 OID 85022)
 -- Name: transaction_detail; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -241,7 +246,9 @@ CREATE TABLE public.transaction_detail (
     transaction_id uuid,
     product_id uuid,
     price integer,
-    qty integer
+    qty integer,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
 );
 
 
@@ -249,58 +256,60 @@ ALTER TABLE public.transaction_detail OWNER TO postgres;
 
 --
 -- TOC entry 209 (class 1259 OID 84976)
--- Name: user; Type: TABLE; Schema: public; Owner: postgres
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public."user" (
+CREATE TABLE public.users (
     id uuid NOT NULL,
     email character varying(255) NOT NULL,
     password character varying(255) NOT NULL,
     level integer NOT NULL,
     token character varying(255),
-    is_verified integer NOT NULL
+    is_verified integer NOT NULL,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
 );
 
 
-ALTER TABLE public."user" OWNER TO postgres;
+ALTER TABLE public.users OWNER TO postgres;
 
 --
--- TOC entry 3401 (class 0 OID 0)
+-- TOC entry 3398 (class 0 OID 0)
 -- Dependencies: 209
--- Name: COLUMN "user".level; Type: COMMENT; Schema: public; Owner: postgres
+-- Name: COLUMN users.level; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public."user".level IS '0 = Admin
+COMMENT ON COLUMN public.users.level IS '0 = Admin
 1 = Seller
 2 = Buyer';
 
 
 --
--- TOC entry 3384 (class 0 OID 84998)
--- Dependencies: 212
+-- TOC entry 3381 (class 0 OID 84998)
+-- Dependencies: 211
 -- Data for Name: address; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3386 (class 0 OID 85012)
--- Dependencies: 214
+-- TOC entry 3382 (class 0 OID 85012)
+-- Dependencies: 212
 -- Data for Name: cart; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3389 (class 0 OID 85027)
--- Dependencies: 217
+-- TOC entry 3385 (class 0 OID 85027)
+-- Dependencies: 215
 -- Data for Name: category; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3382 (class 0 OID 84983)
+-- TOC entry 3380 (class 0 OID 84983)
 -- Dependencies: 210
 -- Data for Name: chat; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -308,96 +317,87 @@ COMMENT ON COLUMN public."user".level IS '0 = Admin
 
 
 --
--- TOC entry 3390 (class 0 OID 85034)
--- Dependencies: 218
+-- TOC entry 3386 (class 0 OID 85034)
+-- Dependencies: 216
 -- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3394 (class 0 OID 85054)
--- Dependencies: 222
+-- TOC entry 3390 (class 0 OID 85054)
+-- Dependencies: 220
 -- Data for Name: product_brand; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3393 (class 0 OID 85049)
--- Dependencies: 221
+-- TOC entry 3389 (class 0 OID 85049)
+-- Dependencies: 219
 -- Data for Name: product_color; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3392 (class 0 OID 85044)
--- Dependencies: 220
+-- TOC entry 3388 (class 0 OID 85044)
+-- Dependencies: 218
 -- Data for Name: product_image; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3391 (class 0 OID 85041)
--- Dependencies: 219
+-- TOC entry 3387 (class 0 OID 85041)
+-- Dependencies: 217
 -- Data for Name: product_size; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3383 (class 0 OID 84991)
--- Dependencies: 211
+-- TOC entry 3391 (class 0 OID 85071)
+-- Dependencies: 221
 -- Data for Name: profile; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3385 (class 0 OID 85005)
--- Dependencies: 213
+-- TOC entry 3392 (class 0 OID 85081)
+-- Dependencies: 222
 -- Data for Name: store; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3387 (class 0 OID 85017)
--- Dependencies: 215
+-- TOC entry 3383 (class 0 OID 85017)
+-- Dependencies: 213
 -- Data for Name: transaction; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3388 (class 0 OID 85022)
--- Dependencies: 216
+-- TOC entry 3384 (class 0 OID 85022)
+-- Dependencies: 214
 -- Data for Name: transaction_detail; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3381 (class 0 OID 84976)
+-- TOC entry 3379 (class 0 OID 84976)
 -- Dependencies: 209
--- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
 
 --
--- TOC entry 3221 (class 2606 OID 84997)
--- Name: profile address_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.profile
-    ADD CONSTRAINT address_pkey PRIMARY KEY (id);
-
-
---
--- TOC entry 3223 (class 2606 OID 85004)
+-- TOC entry 3221 (class 2606 OID 85004)
 -- Name: address address_pkey1; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -406,7 +406,7 @@ ALTER TABLE ONLY public.address
 
 
 --
--- TOC entry 3227 (class 2606 OID 85016)
+-- TOC entry 3223 (class 2606 OID 85016)
 -- Name: cart cart_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -415,7 +415,7 @@ ALTER TABLE ONLY public.cart
 
 
 --
--- TOC entry 3233 (class 2606 OID 85033)
+-- TOC entry 3229 (class 2606 OID 85033)
 -- Name: category categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -433,7 +433,7 @@ ALTER TABLE ONLY public.chat
 
 
 --
--- TOC entry 3241 (class 2606 OID 85060)
+-- TOC entry 3239 (class 2606 OID 85060)
 -- Name: product_brand product_brand_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -442,7 +442,7 @@ ALTER TABLE ONLY public.product_brand
 
 
 --
--- TOC entry 3239 (class 2606 OID 85053)
+-- TOC entry 3237 (class 2606 OID 85053)
 -- Name: product_color product_color_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -451,7 +451,7 @@ ALTER TABLE ONLY public.product_color
 
 
 --
--- TOC entry 3237 (class 2606 OID 85048)
+-- TOC entry 3235 (class 2606 OID 85048)
 -- Name: product_image product_images_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -460,7 +460,7 @@ ALTER TABLE ONLY public.product_image
 
 
 --
--- TOC entry 3235 (class 2606 OID 85040)
+-- TOC entry 3231 (class 2606 OID 85040)
 -- Name: product product_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -469,16 +469,16 @@ ALTER TABLE ONLY public.product
 
 
 --
--- TOC entry 3225 (class 2606 OID 85011)
--- Name: store store_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- TOC entry 3233 (class 2606 OID 85087)
+-- Name: product_size product_size_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.store
-    ADD CONSTRAINT store_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.product_size
+    ADD CONSTRAINT product_size_pkey PRIMARY KEY (id);
 
 
 --
--- TOC entry 3231 (class 2606 OID 85026)
+-- TOC entry 3227 (class 2606 OID 85026)
 -- Name: transaction_detail transaction_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -487,7 +487,7 @@ ALTER TABLE ONLY public.transaction_detail
 
 
 --
--- TOC entry 3229 (class 2606 OID 85021)
+-- TOC entry 3225 (class 2606 OID 85021)
 -- Name: transaction transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -497,14 +497,14 @@ ALTER TABLE ONLY public.transaction
 
 --
 -- TOC entry 3217 (class 2606 OID 84982)
--- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: users user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public."user"
+ALTER TABLE ONLY public.users
     ADD CONSTRAINT user_pkey PRIMARY KEY (id);
 
 
--- Completed on 2022-06-08 11:44:01
+-- Completed on 2022-06-09 11:33:20
 
 --
 -- PostgreSQL database dump complete
