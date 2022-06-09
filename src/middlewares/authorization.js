@@ -1,4 +1,4 @@
-const User = require('../models/user.model');
+const User = require('../models/user');
 const { failed } = require('../helpers/response');
 
 module.exports = {
@@ -26,6 +26,17 @@ module.exports = {
         code: 500,
         message: error.message,
         error: 'Internal Server Error',
+      });
+    }
+  },
+  isAdmin: (req, res, next) => {
+    if (req.APP_DATA.tokenDecoded.level === 0) {
+      next();
+    } else {
+      failed(res, {
+        code: 403,
+        message: "You don't have permission!",
+        error: 'Forbidden',
       });
     }
   },
