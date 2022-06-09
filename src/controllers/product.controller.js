@@ -1,36 +1,38 @@
 const { v4: uuidv4 } = require('uuid');
-const bcrypt = require('bcrypt');
 const Sequelize = require('sequelize');
 const { success, failed } = require('../helpers/response');
-const Store = require('../models/store.js');
 const Product = require('../models/product.js');
 const ProductColor = require('../models/product_color');
 const ProductImage = require('../models/product_image');
 const ProductSize = require('../models/product_size');
+const pagination = require('../utils/pagination');
+const Op = Sequelize.Op;
 
 module.exports = {
   getAllProduct: async (req, res) => {
     try {
-      let { page, limit, search, sort, sortType } = req.body;
+      let { page, limit, search, sort, sortType } = req.query;
 
       page = Number(page) || 1;
       limit = Number(limit) || 10;
-      search = search || '';
+
       sort = sort || 'product_name';
-      sortType = sortType || 'DESC';
+      sortType = sortType || 'ASC';
+      const condition = search
+        ? {
+            product_name: { [Op.iLike]: `%${search}%` },
+          }
+        : null;
       const offset = (page - 1) * limit;
-      const Op = Sequelize.Op;
 
       const product = await Product.findAndCountAll({
-        where: {
-          product_name: { [Op.like]: `%${search}%` },
-        },
+        where: condition,
         order: [[`${sort}`, `${sortType}`]],
         limit,
         offset,
       });
 
-      if (!product.length) {
+      if (!product.count) {
         return failed(res, {
           code: 404,
           message: 'Product Not Found',
@@ -39,15 +41,7 @@ module.exports = {
       }
 
       const data = await Promise.all(
-        product.map(async (item) => {
-          // const brand = await ProductBrand.findAll({
-          //   where: {
-          //     product_id: item.id,
-          //   },
-          // });
-
-          // const brand =
-
+        product.rows.map(async (item) => {
           const color = await ProductColor.findAll({
             where: {
               product_id: item.id,
@@ -60,7 +54,7 @@ module.exports = {
             },
           });
 
-          const size = await ProductImage.findAll({
+          const size = await ProductSize.findAll({
             where: {
               product_id: item.id,
             },
@@ -77,14 +71,12 @@ module.exports = {
         })
       );
 
-      // if (search) {
-      //   const paging = pagination
-      // }
-
+      const paging = pagination(product.count, page, limit);
       return success(res, {
         code: 200,
         message: `Success get all product`,
         data,
+        pagination: paging.response,
       });
     } catch (error) {
       return failed(res, {
@@ -96,7 +88,50 @@ module.exports = {
   },
   getProductById: async (req, res) => {
     try {
+      const { id } = req.params;
 
+      const product = await Product.findAll({
+        where: {
+          id,
+        },
+      });
+
+      if (!product.length) {
+        return failed(res, {
+          code: 404,
+          message: `Product by id ${id} not found`,
+          error: 'Not Found',
+        });
+      }
+
+      const color = await ProductColor.findAll({
+        where: {
+          product_id: id,
+        },
+      });
+
+      const image = await ProductImage.findAll({
+        where: {
+          product_id: id,
+        },
+      });
+
+      const size = await ProductSize.findAll({
+        where: {
+          product_id: id,
+        },
+      });
+
+      success(res, {
+        code: 200,
+        message: `Success get user by id`,
+        data: {
+          product: product[0],
+          color,
+          image,
+          size,
+        },
+      });
     } catch (error) {
       return failed(res, {
         code: 500,
@@ -108,20 +143,6 @@ module.exports = {
   createProduct: async (req, res) => {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
-
-      const store = await Store.findAll({
-        where: {
-          user_id: userId,
-        },
-      });
-
-      if (!store.length) {
-        return failed(res, {
-          code: 404,
-          message: `Store by id ${userId} not found`,
-          error: 'Not Found',
-        });
-      }
 
       const {
         category_id,
@@ -147,6 +168,7 @@ module.exports = {
         description,
         stock,
         rating,
+        is_active: 1,
       };
 
       await Product.create(product);
@@ -328,13 +350,16 @@ module.exports = {
         });
       }
 
-      await Product.update({
-        is_active: 0
-      }, {
-        where: {
-          id,
+      await Product.update(
+        {
+          is_active: 0,
         },
-      });
+        {
+          where: {
+            id,
+          },
+        }
+      );
 
       return success(res, {
         code: 200,
