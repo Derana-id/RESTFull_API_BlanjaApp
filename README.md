@@ -1,13 +1,13 @@
-<br />
+<div id="top"></div>
 <p align="center">
 <div align="center">
-  <img height="150" src=""/>
+  <img height="150" src="./public/Logo.png"/>
 </div>
   <h3 align="center">Blanja : Backend E-Commerce</h3>
   <p align="center">
     <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp"><strong>Explore the docs »</strong></a>
     <br /><br />
-    <a href="#">View Demo</a>
+    <a href="#">View Web Service</a>
     ·
     <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp/issues">Report Bug</a>
     ·
@@ -31,24 +31,24 @@
 - [REST API](#rest-api)
 - [Contributing](#contributing)
 - [Related Project](#related-project)
-- [Contact](#contact)
-
+- [Contributors](#contributors)
+- [License](#license)
 
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
--
+Create a Node.js app for building e-commerce RESTful APIs using Express.
 
 ### Built With
 
 - [Node.js](https://nodejs.org/en/)
 - [Express.js](https://expressjs.com/)
 - [JSON Web Tokens](https://jwt.io/)
-- [Nodemailer]('https://nodemailer.com/about/')
-- [Socket.io]()
-- [Sequelize]()
-- [PostgreSQL]()
+- [Nodemailer](https://nodemailer.com/about/)
+- [Socket.io](https://socket.io/)
+- [Sequelize](https://sequelize.org/)
+- [PostgreSQL](https://www.postgresql.org/)
 - and other
 
 <!-- GETTING STARTED -->
@@ -58,7 +58,7 @@
 
 This is an example of how to list things you need to use the software and how to install them.
 
-* [nodejs](https://nodejs.org/en/download/)
+* [Node.js](https://nodejs.org/en/download/)
 
 ### Requirements
 * [Node.js](https://nodejs.org/en/)
@@ -81,10 +81,10 @@ npm install
 ```
 - Make a new database and import [blanja.sql](./blanja.sql)
 - <a href="#setup-env-example">Setup .env</a>
-- Starting application
-```
-npm run serve
-```
+- Type ` npm run dev` To Start Development
+- Type ` npm run start` To Start Production
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Setup .env example
 
@@ -121,11 +121,15 @@ GMAIL_REFRESH_TOKEN = [GMAIL_REFRESH_TOKEN]
 
 ```
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## REST API
 
-You can view my Postman collection [here]()
+You can view my Postman collection [here](https://app.getpostman.com/run-collection/19659051-7f818db8-a545-43c6-ba16-2fdd859ce43b?action=collection%2Ffork&collection-url=entityId%3D19659051-7f818db8-a545-43c6-ba16-2fdd859ce43b%26entityType%3Dcollection%26workspaceId%3D2d0c24df-fbb7-405f-93af-c4ef984f8428#?env%5BDevelopment%5D=W3sia2V5IjoiZGV2IiwidmFsdWUiOiJodHRwOi8vbG9jYWxob3N0OjQwMDAvIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQifV0=)
 </br>
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/3b5e01421434a5ef05ae?action=collection%2Fimport)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -138,14 +142,20 @@ Contributions are what make the open source community such an amazing place to b
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Related Project
-:rocket: [`Backend Blanja`](https://github.com/aryairama/arkademy-express-TokoKu)
+:rocket: [`Backend Blanja`](https://github.com/Derana-id/RESTFull_API_BlanjaApp)
 
-:rocket: [`Frontend Blanja`](https://github.com/aryairama/arkademy-react-TokoKu)
+:rocket: [`Frontend Blanja`](https://github.com/Derana-id/Front-End-BelanjaApp)
+
+:rocket: [`Frontend Blanja Admin`](https://github.com/Derana-id/Front-End-Admin)
+
+:rocket: [`Web Service`]()
 
 :rocket: [`Demo Blanja`]()
+
+:rocket: [`Demo Blanja Admin`]()
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -175,8 +185,3 @@ Contributions are what make the open source community such an amazing place to b
 Distributed under the [MIT](/LICENSE) License.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-
-
