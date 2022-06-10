@@ -7,7 +7,7 @@
   <p align="center">
     <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp"><strong>Explore the docs »</strong></a>
     <br /><br />
-    <a href="#">View Web Service</a>
+    <a href="blanja-app.herokuapp.com/">View Web Service</a>
     ·
     <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp/issues">Report Bug</a>
     ·
@@ -151,7 +151,7 @@ Contributions are what make the open source community such an amazing place to b
 
 :rocket: [`Frontend Blanja Admin`](https://github.com/Derana-id/Front-End-Admin)
 
-:rocket: [`Web Service`]()
+:rocket: [`Web Service`](blanja-app.herokuapp.com/)
 
 :rocket: [`Demo Blanja`]()
 
