@@ -1,23 +1,27 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/pg');
 
-const Category = db.define(
-  'category',
+const TrunsactionDetail = db.define(
+  'transaction_detail',
   {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
     },
-    category_name: {
-      type: DataTypes.STRING,
+    transaction_id: {
+      type: DataTypes.UUID,
       allowNull: true,
     },
-    photo: {
-      type: DataTypes.STRING,
+    product_id: {
+      type: DataTypes.UUID,
       allowNull: true,
     },
-    is_active: {
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    qty: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
@@ -27,4 +31,4 @@ const Category = db.define(
   }
 );
 
-module.exports = Category;
+module.exports = TrunsactionDetail;

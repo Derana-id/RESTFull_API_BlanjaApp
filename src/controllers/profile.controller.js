@@ -2,6 +2,9 @@ const User = require('../models/user');
 const Profile = require('../models/profile');
 const { success, failed } = require('../helpers/response');
 const deleteFile = require('../utils/deleteFile');
+const Sequelize = require('sequelize');
+const pagination = require('../utils/pagination');
+const Op = Sequelize.Op;
 
 module.exports = {
   getUserById: async (req, res) => {
@@ -120,6 +123,72 @@ module.exports = {
       if (req.file) {
         deleteFile(`public/uploads/users/${req.file.filename}`);
       }
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  getAllProfile: async (req, res) => {
+    try {
+      let { page, limit, search, sort, sortType } = req.query;
+      page = Number(page) || 1;
+      limit = Number(limit) || 10;
+      sort = sort || 'name';
+      sortType = sortType || 'ASC';
+
+      const condition = search
+        ? {
+            [Op.or]: [
+              {
+                name: { [Op.iLike]: `%${search}%` },
+              },
+            ],
+          }
+        : null;
+
+      const offset = (page - 1) * limit;
+
+      const result = await Profile.findAndCountAll({
+        where: condition,
+        order: [[`${sort}`, `${sortType}`]],
+        limit,
+        offset,
+      });
+      if (!result.count) {
+        return failed(res, {
+          code: 404,
+          message: 'Store Not Found',
+          error: 'Not Found',
+        });
+      }
+
+      const data = await Promise.all(
+        result.rows.map(async (item) => {
+          const user = await User.findAll({
+            where: {
+              id: item.user_id,
+            },
+          });
+
+          const obj = {
+            profile: item,
+            user,
+          };
+
+          return obj;
+        })
+      );
+
+      const paging = pagination(result.count, page, limit);
+      return success(res, {
+        code: 200,
+        message: `Success get all store`,
+        data: data,
+        pagination: paging.response,
+      });
+    } catch (error) {
       return failed(res, {
         code: 500,
         message: error.message,

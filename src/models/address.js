@@ -11,15 +11,15 @@ const Address = db.define(
     },
     user_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
     },
     label: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     recipient_name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     recipient_phone: {
       type: DataTypes.STRING,
@@ -27,23 +27,23 @@ const Address = db.define(
     },
     address: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     postal_code: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     city: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     is_primary: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     is_active: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {

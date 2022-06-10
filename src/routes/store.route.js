@@ -5,10 +5,15 @@ const { isSeller } = require('../middlewares/authorization');
 const { update } = require('../validations/store.validation');
 const validation = require('../middlewares/validation');
 const upload = require('../middlewares/uploadUser');
-const { getUserById, updateStore } = require('../controllers/store.controller');
+const {
+  getUserById,
+  updateStore,
+  getAllStore,
+} = require('../controllers/store.controller');
 
 const router = express.Router();
 router
+  .get('/store', jwtAuth, getAllStore)
   .get('/store/:id', jwtAuth, getUserById)
   .put('/store', jwtAuth, isSeller, upload, update, validation, updateStore);
 
