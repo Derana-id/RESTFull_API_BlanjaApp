@@ -10,7 +10,6 @@ const {
 const {
   insertValidation,
   updateValidation,
-  deleteValidation,
 } = require('../validations/category.validation');
 const validation = require('../middlewares/validation');
 
@@ -41,13 +40,6 @@ router
     validation,
     updateCategory
   )
-  .put(
-    '/category/delete/:id',
-    jwtAuth,
-    isAdmin,
-    deleteValidation,
-    validation,
-    deleteCategory
-  );
+  .put('/category/delete/:id', jwtAuth, isAdmin, deleteCategory);
 
 module.exports = router;

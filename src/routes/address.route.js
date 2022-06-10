@@ -30,13 +30,13 @@ router
     insertAddress
   )
   .put(
-    '/address',
+    '/address/:id',
     jwtAuth,
     isBuyer,
     updateValidation,
     validation,
     updateAddress
   )
-  .put('/address/:id', jwtAuth, isBuyer, deleteAddress);
+  .put('/address/delete/:id', jwtAuth, isBuyer, deleteAddress);
 
 module.exports = router;

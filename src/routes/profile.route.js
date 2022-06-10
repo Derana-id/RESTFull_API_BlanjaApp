@@ -8,10 +8,12 @@ const upload = require('../middlewares/uploadUser');
 const {
   getUserById,
   updateProfile,
+  getAllProfile,
 } = require('../controllers/profile.controller');
 
 const router = express.Router();
 router
+  .get('/profile', jwtAuth, getAllProfile)
   .get('/profile/:id', jwtAuth, getUserById)
   .put('/profile', jwtAuth, isBuyer, upload, update, validation, updateProfile);
 
