@@ -1,28 +1,46 @@
 const Address = require('../models/address');
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
+const Sequelize = require('sequelize');
+const pagination = require('../utils/pagination');
 
 module.exports = {
   getAllmyAddress: async (req, res) => {
     try {
+      const Op = Sequelize.Op;
       const userId = req.APP_DATA.tokenDecoded.id;
-      const result = await Address.findAll({
-        where: {
-          user_id: userId,
-          is_active: 1,
-        },
+      let { page, limit, search, sort, sortType } = req.query;
+      page = Number(page) || 1;
+      limit = Number(limit) || 10;
+      sort = sort || 'label';
+      sortType = sortType || 'ASC';
+      const condition = search
+        ? {
+            recipient_name: { [Op.iLike]: `%${search}%` },
+            is_active: 1,
+            user_id: userId,
+          }
+        : null;
+      const offset = (page - 1) * limit;
+      const result = await Address.findAndCountAll({
+        where: condition,
+        order: [[`${sort}`, `${sortType}`]],
+        limit,
+        offset,
       });
-      if (!result.length) {
+      if (!result.count) {
         return failed(res, {
-          code: 409,
-          message: 'Addres not found',
-          error: 'Get All Failed',
+          code: 404,
+          message: 'Addres Not Found',
+          error: 'Not Found',
         });
       }
+      const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
         message: `Success get all address by id ${userId}`,
-        data: result,
+        data: result.rows,
+        pagination: paging.response,
       });
     } catch (error) {
       return failed(res, {
@@ -82,8 +100,7 @@ module.exports = {
     try {
       const id = uuidv4();
       const userId = req.APP_DATA.tokenDecoded.id;
-      // console.log(userId);
-      const {
+      let {
         label,
         recipientName,
         recipientPhone,
@@ -92,6 +109,26 @@ module.exports = {
         city,
         isPrimary,
       } = req.body;
+
+      const checkAddress = await Address.findAll({
+        where: {
+          user_id: userId,
+        },
+      });
+      if (!checkAddress.length) {
+        isPrimary = 1;
+      }
+
+      if (isPrimary === 1) {
+        const setPrimary = {
+          is_primary: 0,
+        };
+        await Address.update(setPrimary, {
+          where: {
+            user_id: userId,
+          },
+        });
+      }
 
       const data = {
         id: id,

@@ -11,15 +11,15 @@ const Category = db.define(
     },
     category_name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     photo: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     is_active: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {
