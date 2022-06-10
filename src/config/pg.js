@@ -1,6 +1,7 @@
 const { Sequelize } = require('sequelize');
 const {
   NODE_ENV,
+  DATABASE_URL,
   DB_HOST,
   DB_USER,
   DB_PASSWORD,
