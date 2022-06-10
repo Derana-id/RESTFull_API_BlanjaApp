@@ -2,15 +2,43 @@ const ProductBrand = require('../models/product_brand');
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 const deleteFile = require('../utils/deleteFile');
+const Sequelize = require('sequelize');
+const pagination = require('../utils/pagination');
 
 module.exports = {
   getAllBrand: async (req, res) => {
     try {
-      const result = await ProductBrand.findAll();
+      const Op = Sequelize.Op;
+      let { page, limit, search, sort, sortType } = req.query;
+      page = Number(page) || 1;
+      limit = Number(limit) || 10;
+      sort = sort || 'brand_name';
+      sortType = sortType || 'ASC';
+      const condition = search
+        ? {
+            brand_name: { [Op.iLike]: `%${search}%` },
+          }
+        : null;
+      const offset = (page - 1) * limit;
+      const result = await ProductBrand.findAndCountAll({
+        where: condition,
+        order: [[`${sort}`, `${sortType}`]],
+        limit,
+        offset,
+      });
+      if (!result.count) {
+        return failed(res, {
+          code: 404,
+          message: 'Brand Not Found',
+          error: 'Not Found',
+        });
+      }
+      const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
-        message: `Success get all Brand`,
-        data: result,
+        message: `Success get all brand`,
+        data: result.rows,
+        pagination: paging.response,
       });
     } catch (error) {
       return failed(res, {

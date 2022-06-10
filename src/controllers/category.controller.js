@@ -2,15 +2,43 @@ const Category = require('../models/category');
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 const deleteFile = require('../utils/deleteFile');
+const Sequelize = require('sequelize');
+const pagination = require('../utils/pagination');
 
 module.exports = {
   getAllCategory: async (req, res) => {
     try {
-      const result = await Category.findAll();
+      const Op = Sequelize.Op;
+      let { page, limit, search, sort, sortType } = req.query;
+      page = Number(page) || 1;
+      limit = Number(limit) || 10;
+      sort = sort || 'category_name';
+      sortType = sortType || 'ASC';
+      const condition = search
+        ? {
+            category_name: { [Op.iLike]: `%${search}%` },
+          }
+        : null;
+      const offset = (page - 1) * limit;
+      const result = await Category.findAndCountAll({
+        where: condition,
+        order: [[`${sort}`, `${sortType}`]],
+        limit,
+        offset,
+      });
+      if (!result.count) {
+        return failed(res, {
+          code: 404,
+          message: 'Category Not Found',
+          error: 'Not Found',
+        });
+      }
+      const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
         message: `Success get all category`,
-        data: result,
+        data: result.rows,
+        pagination: paging.response,
       });
     } catch (error) {
       return failed(res, {

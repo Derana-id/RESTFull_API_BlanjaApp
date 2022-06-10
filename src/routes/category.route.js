@@ -10,7 +10,6 @@ const {
 const {
   insertValidation,
   updateValidation,
-  deleteValidation,
 } = require('../validations/category.validation');
 const validation = require('../middlewares/validation');
 
