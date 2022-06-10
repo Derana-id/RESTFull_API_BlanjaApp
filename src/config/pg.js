@@ -23,6 +23,8 @@ if (NODE_ENV === 'development') {
 // Mode Production
 if (NODE_ENV === 'production') {
   db = new Sequelize(DATABASE_URL, {
+    dialect: DB_DIALECT,
+    protocol: DB_DIALECT,
     dialectOptions: {
       ssl: {
         require: true,
