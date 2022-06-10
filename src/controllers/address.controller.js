@@ -83,6 +83,7 @@ module.exports = {
     try {
       const id = req.params.id;
       const result = await Address.findByPk(id);
+      // console.log(result.dataValues);
       return success(res, {
         code: 200,
         message: `Success get address by id ${id}`,
@@ -240,21 +241,35 @@ module.exports = {
   deleteAddress: async (req, res) => {
     try {
       const id = req.params.id;
-      const data = {
-        is_active: 0,
-      };
-      const result = await Address.update(data, {
-        where: {
-          id: id,
-        },
-      });
-      if (!result.length) {
+
+      const checkAddress = await Address.findByPk(id);
+
+      if (!checkAddress) {
         return failed(res, {
           code: 409,
           message: 'Id not found',
           error: 'Delete Failed',
         });
       }
+
+      if (checkAddress.dataValues.is_primary === 1) {
+        return failed(res, {
+          code: 409,
+          message: 'This address is primary',
+          error: 'Delete Failed',
+        });
+      }
+
+      const data = {
+        is_active: 0,
+      };
+
+      const result = await Address.update(data, {
+        where: {
+          id: id,
+        },
+      });
+
       return success(res, {
         code: 200,
         message: `Success delete address`,
