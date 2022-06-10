@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const Sequelize = require('sequelize');
 const { success, failed } = require('../helpers/response');
 const Product = require('../models/product.js');
+const Store = require('../models/store.js');
 const ProductColor = require('../models/product_color');
 const ProductImage = require('../models/product_image');
 const ProductSize = require('../models/product_size');
@@ -86,6 +87,66 @@ module.exports = {
       });
     }
   },
+  getProductByUser: async (req, res) => {
+    try {
+      const { id } = req.APP_DATA.tokenDecoded;
+
+      const store = await Store.findAll({
+        where: {
+          user_id: id,
+        },
+      });
+
+      const product = await Product.findAll({
+        where: {
+          store_id: store[0].id,
+        },
+      });
+
+      if (!product.length) {
+        return failed(res, {
+          code: 404,
+          message: `Product by id ${id} not found`,
+          error: 'Not Found',
+        });
+      }
+
+      const color = await ProductColor.findAll({
+        where: {
+          product_id: product[0].id,
+        },
+      });
+
+      const image = await ProductImage.findAll({
+        where: {
+          product_id: product[0].id,
+        },
+      });
+
+      const size = await ProductSize.findAll({
+        where: {
+          product_id: product[0].id,
+        },
+      });
+
+      success(res, {
+        code: 200,
+        message: `Success get product by user`,
+        data: {
+          product,
+          color,
+          image,
+          size,
+        },
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
   getProductById: async (req, res) => {
     try {
       const { id } = req.params;
@@ -144,6 +205,12 @@ module.exports = {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
 
+      const store = await Store.findAll({
+        where: {
+          user_id: userId,
+        },
+      });
+
       const {
         category_id,
         product_name,
@@ -159,7 +226,7 @@ module.exports = {
 
       const product = {
         id,
-        store_id: userId,
+        store_id: store[0].id,
         category_id,
         product_name,
         brand_id,
@@ -226,11 +293,7 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const product = await Product.findAll({
-        where: {
-          id,
-        },
-      });
+      const product = await Product.findByPk(id);
 
       if (!product.length) {
         return failed(res, {
@@ -336,11 +399,7 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const product = await Product.findAll({
-        where: {
-          id,
-        },
-      });
+      const product = await Product.findByPk(id);
 
       if (!product.length) {
         return failed(res, {

@@ -8,6 +8,7 @@ module.exports = {
   API_URL: process.env.API_URL,
   APP_CLIENT: process.env.APP_CLIENT,
   // database
+  DATABASE_URL: process.env.DATABASE_URL,
   DB_HOST: process.env.DB_HOST,
   DB_USER: process.env.DB_USER,
   DB_PASSWORD: process.env.DB_PASSWORD,

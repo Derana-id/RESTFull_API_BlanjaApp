@@ -3,12 +3,12 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 const xss = require('xss-clean');
-// const socketio = require('socket.io');
+const socketio = require('socket.io');
 const http = require('http');
 const { APP_NAME, NODE_ENV, PORT } = require('./src/helpers/env');
 const { failed } = require('./src/helpers/response');
 
-// const listenSocket = require('./src/socket');
+const listenSocket = require('./src/socket');
 
 // express declaration
 const app = express();
@@ -50,6 +50,7 @@ app.use(require('./src/routes/profile.route'));
 app.use(require('./src/routes/store.route'));
 app.use(require('./src/routes/product.route'));
 app.use(require('./src/routes/transaction.route'));
+app.use(require('./src/routes/cart.route'));
 
 // 404 router
 app.use((req, res) => {
@@ -61,20 +62,20 @@ app.use((req, res) => {
 });
 
 // setup socket.io
-// const server = http.createServer(app);
+const server = http.createServer(app);
 
-// const io = socketio(server, {
-//   cors: {
-//     origin: '*',
-//   },
-// });
+const io = socketio(server, {
+  cors: {
+    origin: '*',
+  },
+});
 
-// io.on('connection', (socket) => {
-//   console.log('Client connected');
-//   listenSocket(io, socket);
-// });
+io.on('connection', (socket) => {
+  console.log('Client connected');
+  listenSocket(io, socket);
+});
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(
     `Server running running at port ${PORT} with ${NODE_ENV} environment`
   );
