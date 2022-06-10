@@ -10,7 +10,10 @@ const insertValidation = [
 
   // recipientName
   check('recipientName', 'recipientName cannot be empty').not().isEmpty(),
-  check('recipientName', 'recipientName must be between 3 and 50 characters').isLength({
+  check(
+    'recipientName',
+    'recipientName must be between 3 and 50 characters'
+  ).isLength({
     min: 3,
     max: 50,
   }),
@@ -18,7 +21,10 @@ const insertValidation = [
   // recipientPhone
   check('recipientPhone', 'recipientPhone cannot be empty').not().isEmpty(),
   check('recipientPhone', 'please enter recipientPhone correctly').isNumeric(),
-  check('recipientPhone', 'recipientPhone require 12 or more characters').isLength({
+  check(
+    'recipientPhone',
+    'recipientPhone require 12 or more characters'
+  ).isLength({
     min: 12,
     max: 20,
   }),
@@ -51,9 +57,6 @@ const insertValidation = [
 ];
 
 const updateValidation = [
-  // id
-  check('id', 'id cannot be empty').not().isEmpty(),
-
   // label
   check('label', 'label cannot be empty').not().isEmpty(),
   check('label', 'label must be between 3 and 50 characters').isLength({
@@ -63,7 +66,10 @@ const updateValidation = [
 
   // recipientName
   check('recipientName', 'recipientName cannot be empty').not().isEmpty(),
-  check('recipientName', 'recipientName must be between 3 and 50 characters').isLength({
+  check(
+    'recipientName',
+    'recipientName must be between 3 and 50 characters'
+  ).isLength({
     min: 3,
     max: 50,
   }),
@@ -71,7 +77,10 @@ const updateValidation = [
   // recipientPhone
   check('recipientPhone', 'recipientPhone cannot be empty').not().isEmpty(),
   check('recipientPhone', 'please enter recipientPhone correctly').isNumeric(),
-  check('recipientPhone', 'recipientPhone require 12 or more characters').isLength({
+  check(
+    'recipientPhone',
+    'recipientPhone require 12 or more characters'
+  ).isLength({
     min: 12,
     max: 20,
   }),
@@ -103,4 +112,4 @@ const updateValidation = [
   }),
 ];
 
-module.exports = {insertValidation, updateValidation}
+module.exports = { insertValidation, updateValidation };

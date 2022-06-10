@@ -158,9 +158,9 @@ module.exports = {
   },
   updateAddress: async (req, res) => {
     try {
-      // const userId = req.APP_DATA.tokenDecoded.id;
-      const {
-        id,
+      const userId = req.APP_DATA.tokenDecoded.id;
+      const id = req.params.id;
+      let {
         label,
         recipientName,
         recipientPhone,
@@ -169,6 +169,38 @@ module.exports = {
         city,
         isPrimary,
       } = req.body;
+
+      const checkAddress = await Address.findAll({
+        where: {
+          user_id: userId,
+        },
+      });
+      if (!checkAddress.length) {
+        isPrimary = 1;
+      }
+
+      if (isPrimary === 1) {
+        const setPrimary = {
+          is_primary: 0,
+        };
+        await Address.update(setPrimary, {
+          where: {
+            user_id: userId,
+          },
+        });
+      }
+
+      if (isPrimary === 0) {
+        const checkIsPrimary = await Address.findAll({
+          where: {
+            user_id: userId,
+            is_primary: 1,
+          },
+        });
+        if (!checkIsPrimary.length) {
+          isPrimary = 1;
+        }
+      }
 
       const data = {
         label: label,
