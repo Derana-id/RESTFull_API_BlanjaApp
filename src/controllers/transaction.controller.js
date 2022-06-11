@@ -1,5 +1,9 @@
 const Trunsaction = require('../models/transaction');
-const Product = require('../models/product');
+const TrunsactionDetail = require('../models/transaction_detail');
+const Product = require('../models/product.js');
+const ProductColor = require('../models/product_color');
+const ProductImage = require('../models/product_image');
+const ProductSize = require('../models/product_size');
 const Address = require('../models/address');
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
@@ -11,9 +15,10 @@ module.exports = {
   insertTrunsaction: async (req, res) => {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
-      let { price, purchace } = req.body;
+      const productId = req.params.id;
+      let { price, qty } = req.body;
       price = Number(price);
-      purchace = Number(purchace);
+      qty = Number(qty);
 
       const date = new Date();
       const dateOffset = new Date(
@@ -21,7 +26,7 @@ module.exports = {
       );
       const getDate = dateOffset.toISOString();
 
-      const total = price * purchace;
+      const total = price * qty;
 
       const address = await Address.findAll({
         where: {
@@ -32,11 +37,12 @@ module.exports = {
       // console.log(address[0].dataValues);
 
       let data;
+      const transactionId = uuidv4();
       if (!address.length) {
         data = {
-          id: uuidv4(),
+          id: transactionId,
           user_id: userId,
-          invoice: `invoice${getDate}`,
+          invoice: `INV-${getDate}`,
           date: getDate,
           total: total,
           status: 0,
@@ -44,7 +50,7 @@ module.exports = {
         };
       } else {
         data = {
-          id: uuidv4(),
+          id: transactionId,
           user_id: userId,
           invoice: `invoice${getDate}`,
           date: getDate,
@@ -61,6 +67,17 @@ module.exports = {
       }
 
       const result = await Trunsaction.create(data);
+
+      const dataTransactionDetail = {
+        id: uuidv4(),
+        transaction_id: transactionId,
+        product_id: productId,
+        price: total,
+        qty: qty,
+        is_active: 1,
+      };
+      await TrunsactionDetail.create(dataTransactionDetail);
+
       return success(res, {
         code: 200,
         message: `Success insert transaction`,
@@ -230,11 +247,66 @@ module.exports = {
         });
       }
 
+      const data = await Promise.all(
+        result.rows.map(async (item) => {
+          const transactionDetail = await TrunsactionDetail.findAll({
+            where: {
+              transaction_id: item.id,
+            },
+          });
+
+          const dataDetailTransaction = await Promise.all(
+            transactionDetail.map(async (element) => {
+              const product = await Product.findAll({
+                where: {
+                  id: element.product_id,
+                },
+              });
+
+              const dataProduct = await Promise.all(
+                product.map(async (e) => {
+                  const color = await ProductColor.findAll({
+                    where: {
+                      product_id: e.id,
+                    },
+                  });
+
+                  const image = await ProductImage.findAll({
+                    where: {
+                      product_id: e.id,
+                    },
+                  });
+
+                  const size = await ProductSize.findAll({
+                    where: {
+                      product_id: e.id,
+                    },
+                  });
+
+                  const obj = {
+                    transaction: item,
+                    transactionDetail: element,
+                    product: e,
+                    color,
+                    image,
+                    size,
+                  };
+                  console.log(obj);
+
+                  return obj;
+                })
+              );
+            })
+          );
+        })
+      );
+
       const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
         message: `Success get all address`,
-        data: result.rows,
+        // data: result.rows,
+        data,
         pagination: paging.response,
       });
     } catch (error) {
@@ -246,6 +318,7 @@ module.exports = {
     }
   },
   getMyTransaction: async (req, res) => {
+    // ada transaction_detail
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
       let { page, limit, search, sort, sortType } = req.query;
@@ -294,6 +367,7 @@ module.exports = {
     }
   },
   getTransactionId: async (req, res) => {
+    // ada transaction_detail
     try {
       const id = req.params.id;
       const result = await Trunsaction.findByPk(id);
