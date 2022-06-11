@@ -1,24 +1,16 @@
 const express = require('express');
 const {
-  insertTransaction,
-  updateTransaction,
-  getAllTransaction,
-  getTransactionId,
-  deleteTransaction,
+  deleteTransactionAll,
+  deleteTransactionId,
 } = require('../controllers/transactionDetail.controller');
 
 const jwtAuth = require('../middlewares/jwtAuth');
 const { isBuyer, isAdmin } = require('../middlewares/authorization');
 
-const validation = require('../middlewares/validation');
-
 const router = express.Router();
 
 router
-  .post('/transaction-detail', insertTransaction)
-  .put('/transaction-detail', updateTransaction)
-  .get('/transaction-detail', getAllTransaction)
-  .get('/transaction-detail/:id', getTransactionId)
-  .put('/transaction-detail/delete', deleteTransaction);
+  .put('/transaction-detail/delete/all/:id', jwtAuth, deleteTransactionAll)
+  .put('/transaction-detail/delete/:id', jwtAuth, deleteTransactionId);
 
 module.exports = router;

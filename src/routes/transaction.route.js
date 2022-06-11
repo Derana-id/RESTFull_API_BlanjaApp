@@ -22,7 +22,7 @@ const router = express.Router();
 
 router
   .post(
-    '/transaction',
+    '/transaction/:id',
     jwtAuth,
     isBuyer,
     insertValidation,
@@ -45,7 +45,12 @@ router
     validation,
     updatePayment
   )
-  .get('/transaction', jwtAuth, isAdmin, getAllTransaction)
+  .get(
+    '/transaction',
+    jwtAuth,
+    // isAdmin,
+    getAllTransaction
+  )
   .get('/mytransaction', jwtAuth, isBuyer, getMyTransaction)
   .get('/transaction/:id', jwtAuth, getTransactionId)
   .put('/transaction/delete/:id', jwtAuth, isBuyer, deleteTransaction);
