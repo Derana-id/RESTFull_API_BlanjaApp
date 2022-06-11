@@ -8,10 +8,10 @@ const insertValidation = [
     min: 1,
   }),
 
-  // purchace
-  check('purchace', 'purchace cannot be empty').not().isEmpty(),
-  check('purchace', 'please enter purchace correctly').isNumeric(),
-  check('purchace', 'purchace value must number').isInt({
+  // qty
+  check('qty', 'qty cannot be empty').not().isEmpty(),
+  check('qty', 'please enter qty correctly').isNumeric(),
+  check('qty', 'qty value must number').isInt({
     min: 1,
   }),
 ];

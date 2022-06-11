@@ -25,6 +25,10 @@ const TrunsactionDetail = db.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    is_active: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     freezeTableName: true,
