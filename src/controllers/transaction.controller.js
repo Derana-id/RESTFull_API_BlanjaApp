@@ -10,6 +10,7 @@ const { success, failed } = require('../helpers/response');
 const Sequelize = require('sequelize');
 const pagination = require('../utils/pagination');
 const Op = Sequelize.Op;
+const RandomCodes = require('random-codes');
 
 module.exports = {
   insertTrunsaction: async (req, res) => {
@@ -50,13 +51,27 @@ module.exports = {
       });
       // console.log(address[0].dataValues);
 
+      const config = {
+        chars: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        separator: '-',
+        mask: '*',
+        parts: 3,
+        part_size: 4,
+        getChar: function (pool) {
+          var random = Math.floor(Math.random() * pool.length);
+          return pool.charAt(random);
+        },
+      };
+      const rc = new RandomCodes(config);
+
       let data;
+      const code = rc.generate();
       const transactionId = uuidv4();
       if (!address.length) {
         data = {
           id: transactionId,
           user_id: userId,
-          invoice: `INV-${getDate}`,
+          invoice: code,
           date: getDate,
           total: total,
           status: 0,
@@ -66,7 +81,7 @@ module.exports = {
         data = {
           id: transactionId,
           user_id: userId,
-          invoice: `invoice${getDate}`,
+          invoice: code,
           date: getDate,
           total: total,
           status: 0,
