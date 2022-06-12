@@ -21,8 +21,8 @@ const brandUpload = require('../middlewares/uploadProductBrand');
 const router = express.Router();
 
 router
-  .get('/brand', jwtAuth, isAdmin, getAllBrand)
-  .get('/brand/:id', jwtAuth, isAdmin, getBrandId)
+  .get('/brand', jwtAuth, getAllBrand)
+  .get('/brand/:id', jwtAuth, getBrandId)
   .post(
     '/brand',
     jwtAuth,
