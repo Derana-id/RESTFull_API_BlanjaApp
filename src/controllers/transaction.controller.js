@@ -255,49 +255,49 @@ module.exports = {
             },
           });
 
-          const dataDetailTransaction = await Promise.all(
-            transactionDetail.map(async (element) => {
-              const product = await Product.findAll({
-                where: {
-                  id: element.product_id,
-                },
-              });
+          // const dataDetailTransaction = await Promise.all(
+          //   transactionDetail.map(async (element) => {
+          //     const product = await Product.findAll({
+          //       where: {
+          //         id: element.product_id,
+          //       },
+          //     });
 
-              const dataProduct = await Promise.all(
-                product.map(async (e) => {
-                  const color = await ProductColor.findAll({
-                    where: {
-                      product_id: e.id,
-                    },
-                  });
+          //     const dataProduct = await Promise.all(
+          //       product.map(async (e) => {
+          //         const color = await ProductColor.findAll({
+          //           where: {
+          //             product_id: e.id,
+          //           },
+          //         });
 
-                  const image = await ProductImage.findAll({
-                    where: {
-                      product_id: e.id,
-                    },
-                  });
+          //         const image = await ProductImage.findAll({
+          //           where: {
+          //             product_id: e.id,
+          //           },
+          //         });
 
-                  const size = await ProductSize.findAll({
-                    where: {
-                      product_id: e.id,
-                    },
-                  });
+          //         const size = await ProductSize.findAll({
+          //           where: {
+          //             product_id: e.id,
+          //           },
+          //         });
+          //       })
+          //     );
+          //   })
+          // );
 
-                  const obj = {
-                    transaction: item,
-                    transactionDetail: element,
-                    product: e,
-                    color,
-                    image,
-                    size,
-                  };
-                  console.log(obj);
+          const obj = {
+            transaction: item,
+            transactionDetail,
+            // product: e,
+            // color,
+            // image,
+            // size,
+          };
+          console.log(obj);
 
-                  return obj;
-                })
-              );
-            })
-          );
+          return obj;
         })
       );
 
