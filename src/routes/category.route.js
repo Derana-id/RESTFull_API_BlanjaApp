@@ -20,8 +20,8 @@ const categoryUpload = require('../middlewares/uploadCategory');
 const router = express.Router();
 
 router
-  .get('/category', jwtAuth, isAdmin, getAllCategory)
-  .get('/category/:id', jwtAuth, isAdmin, getCategoryId)
+  .get('/category', jwtAuth, getAllCategory)
+  .get('/category/:id', jwtAuth, getCategoryId)
   .post(
     '/category',
     jwtAuth,
