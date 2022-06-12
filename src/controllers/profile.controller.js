@@ -169,7 +169,7 @@ module.exports = {
           const user = await User.findAll({
             where: {
               id: item.user_id,
-              // level: 2,
+              level: 2,
             },
           });
 
@@ -186,19 +186,19 @@ module.exports = {
         })
       );
 
-      // console.log(obj);
-
-      Object.keys(data).forEach((key) => {
-        if (data[key] === null) {
-          delete data[key];
+      const results = [];
+      data.forEach((element) => {
+        if (element) {
+          results.push(element);
         }
+        console.log(element);
       });
 
       const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
         message: `Success get all store`,
-        data: data,
+        data: results,
         pagination: paging.response,
       });
     } catch (error) {
