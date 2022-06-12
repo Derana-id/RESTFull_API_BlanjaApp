@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   getAllCategory,
+  getPublicCategory,
   getCategoryId,
   insertCategory,
   updateCategory,
@@ -10,6 +11,7 @@ const {
 const {
   insertValidation,
   updateValidation,
+  deleteValidation,
 } = require('../validations/category.validation');
 const validation = require('../middlewares/validation');
 
@@ -21,6 +23,7 @@ const router = express.Router();
 
 router
   .get('/category', getAllCategory)
+  .get('/category/public', getPublicCategory)
   .get('/category/:id', getCategoryId)
   .post(
     '/category',
@@ -40,6 +43,13 @@ router
     validation,
     updateCategory
   )
-  .put('/category/delete/:id', jwtAuth, isAdmin, deleteCategory);
+  .put(
+    '/category/delete/:id',
+    jwtAuth,
+    isAdmin,
+    deleteValidation,
+    validation,
+    deleteCategory
+  );
 
 module.exports = router;
