@@ -173,10 +173,14 @@ module.exports = {
             },
           });
 
-          const obj = {
-            profile: item,
-            user,
-          };
+          let obj = null;
+
+          if (user.length) {
+            obj = {
+              profile: item,
+              user,
+            };
+          }
 
           return obj;
         })
