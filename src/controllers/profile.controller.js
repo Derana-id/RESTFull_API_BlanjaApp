@@ -173,20 +173,32 @@ module.exports = {
             },
           });
 
-          const obj = {
-            profile: item,
-            user,
-          };
+          let obj;
+
+          if (user.length) {
+            obj = {
+              profile: item,
+              user,
+            };
+          }
 
           return obj;
         })
       );
 
+      const results = [];
+      data.forEach((element) => {
+        if (element) {
+          results.push(element);
+        }
+        console.log(element);
+      });
+
       const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
         message: `Success get all profile`,
-        data: data,
+        data: results,
         pagination: paging.response,
       });
     } catch (error) {

@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   getAllCategory,
+  getPublicCategory,
   getCategoryId,
   insertCategory,
   updateCategory,
@@ -22,6 +23,7 @@ const router = express.Router();
 
 router
   .get('/category', getAllCategory)
+  .get('/category/public', getPublicCategory)
   .get('/category/:id', getCategoryId)
   .post(
     '/category',
