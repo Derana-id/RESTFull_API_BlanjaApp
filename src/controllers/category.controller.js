@@ -17,12 +17,14 @@ module.exports = {
       const condition = search
         ? {
             category_name: { [Op.iLike]: `%${search}%` },
-            is_active: 1,
           }
         : null;
+      const active = condition
+        ? { is_active: 1, ...condition }
+        : { is_active: 1 };
       const offset = (page - 1) * limit;
       const result = await Category.findAndCountAll({
-        where: condition,
+        where: active,
         order: [[`${sort}`, `${sortType}`]],
         limit,
         offset,
