@@ -169,6 +169,7 @@ module.exports = {
           const user = await User.findAll({
             where: {
               id: item.user_id,
+              level: 2,
             },
           });
 

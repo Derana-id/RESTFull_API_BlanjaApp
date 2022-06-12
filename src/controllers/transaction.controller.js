@@ -20,6 +20,20 @@ module.exports = {
       price = Number(price);
       qty = Number(qty);
 
+      const checkStock = await Product.findAll({
+        where: {
+          id: productId,
+        },
+      });
+
+      if (!checkStock.length) {
+        return failed(res, {
+          code: 409,
+          message: 'Id not found',
+          error: 'Insert Failed',
+        });
+      }
+
       const date = new Date();
       const dateOffset = new Date(
         date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
@@ -77,6 +91,26 @@ module.exports = {
         is_active: 1,
       };
       await TrunsactionDetail.create(dataTransactionDetail);
+
+      const getStock = Number(checkStock[0].stock);
+
+      if (getStock - qty < 0) {
+        return failed(res, {
+          code: 409,
+          message: 'Not enough stock',
+          error: 'Insert Failed',
+        });
+      }
+
+      const stock = getStock - qty;
+      const setStock = {
+        stock: stock,
+      };
+      await Product.update(setStock, {
+        where: {
+          id: productId,
+        },
+      });
 
       return success(res, {
         code: 200,
@@ -247,6 +281,7 @@ module.exports = {
         });
       }
 
+      let getData = [];
       const data = await Promise.all(
         result.rows.map(async (item) => {
           const transactionDetail = await TrunsactionDetail.findAll({
@@ -255,49 +290,48 @@ module.exports = {
             },
           });
 
-          // const dataDetailTransaction = await Promise.all(
-          //   transactionDetail.map(async (element) => {
-          //     const product = await Product.findAll({
-          //       where: {
-          //         id: element.product_id,
-          //       },
-          //     });
+          const dataDetailTransaction = await Promise.all(
+            transactionDetail.map(async (element) => {
+              const product = await Product.findAll({
+                where: {
+                  id: element.product_id,
+                },
+              });
 
-          //     const dataProduct = await Promise.all(
-          //       product.map(async (e) => {
-          //         const color = await ProductColor.findAll({
-          //           where: {
-          //             product_id: e.id,
-          //           },
-          //         });
+              const dataProduct = await Promise.all(
+                product.map(async (e) => {
+                  const color = await ProductColor.findAll({
+                    where: {
+                      product_id: e.id,
+                    },
+                  });
 
-          //         const image = await ProductImage.findAll({
-          //           where: {
-          //             product_id: e.id,
-          //           },
-          //         });
+                  const image = await ProductImage.findAll({
+                    where: {
+                      product_id: e.id,
+                    },
+                  });
 
-          //         const size = await ProductSize.findAll({
-          //           where: {
-          //             product_id: e.id,
-          //           },
-          //         });
-          //       })
-          //     );
-          //   })
-          // );
+                  const size = await ProductSize.findAll({
+                    where: {
+                      product_id: e.id,
+                    },
+                  });
 
-          const obj = {
-            transaction: item,
-            transactionDetail,
-            // product: e,
-            // color,
-            // image,
-            // size,
-          };
-          console.log(obj);
+                  const obj = {
+                    transaction: item,
+                    transactionDetail: element,
+                    product: e,
+                    color,
+                    image,
+                    size,
+                  };
 
-          return obj;
+                  return getData.push(obj);
+                })
+              );
+            })
+          );
         })
       );
 
@@ -305,8 +339,7 @@ module.exports = {
       return success(res, {
         code: 200,
         message: `Success get all address`,
-        // data: result.rows,
-        data,
+        data: getData,
         pagination: paging.response,
       });
     } catch (error) {
@@ -318,7 +351,6 @@ module.exports = {
     }
   },
   getMyTransaction: async (req, res) => {
-    // ada transaction_detail
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
       let { page, limit, search, sort, sortType } = req.query;
@@ -351,11 +383,65 @@ module.exports = {
         });
       }
 
+      let getData = [];
+      const data = await Promise.all(
+        result.rows.map(async (item) => {
+          const transactionDetail = await TrunsactionDetail.findAll({
+            where: {
+              transaction_id: item.id,
+            },
+          });
+
+          const dataDetailTransaction = await Promise.all(
+            transactionDetail.map(async (element) => {
+              const product = await Product.findAll({
+                where: {
+                  id: element.product_id,
+                },
+              });
+
+              const dataProduct = await Promise.all(
+                product.map(async (e) => {
+                  const color = await ProductColor.findAll({
+                    where: {
+                      product_id: e.id,
+                    },
+                  });
+
+                  const image = await ProductImage.findAll({
+                    where: {
+                      product_id: e.id,
+                    },
+                  });
+
+                  const size = await ProductSize.findAll({
+                    where: {
+                      product_id: e.id,
+                    },
+                  });
+
+                  const obj = {
+                    transaction: item,
+                    transactionDetail: element,
+                    product: e,
+                    color,
+                    image,
+                    size,
+                  };
+
+                  return getData.push(obj);
+                })
+              );
+            })
+          );
+        })
+      );
+
       const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
         message: `Success get my transaction`,
-        data: result.rows,
+        data: getData,
         pagination: paging.response,
       });
     } catch (error) {
@@ -367,14 +453,53 @@ module.exports = {
     }
   },
   getTransactionId: async (req, res) => {
-    // ada transaction_detail
     try {
       const id = req.params.id;
       const result = await Trunsaction.findByPk(id);
+
+      const transactionDetail = await TrunsactionDetail.findAll({
+        where: {
+          transaction_id: id,
+        },
+      });
+
+      const product = await Product.findAll({
+        where: {
+          id: transactionDetail[0].product_id,
+        },
+      });
+
+      const color = await ProductColor.findAll({
+        where: {
+          product_id: product[0].id,
+        },
+      });
+
+      const image = await ProductImage.findAll({
+        where: {
+          product_id: product[0].id,
+        },
+      });
+
+      const size = await ProductSize.findAll({
+        where: {
+          product_id: product[0].id,
+        },
+      });
+
+      const data = {
+        transaction: result,
+        transactionDetail,
+        product,
+        color,
+        image,
+        size,
+      };
+
       return success(res, {
         code: 200,
         message: `Success get transaction by id ${id}`,
-        data: result,
+        data: data,
       });
     } catch (error) {
       return failed(res, {
