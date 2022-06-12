@@ -3,6 +3,8 @@ const Sequelize = require('sequelize');
 const { success, failed } = require('../helpers/response');
 const Product = require('../models/product.js');
 const Store = require('../models/store.js');
+const Brand = require('../models/product_brand');
+const Category = require('../models/category');
 const ProductColor = require('../models/product_color');
 const ProductImage = require('../models/product_image');
 const ProductSize = require('../models/product_size');
@@ -41,6 +43,7 @@ module.exports = {
         });
       }
 
+      let getData = [];
       const data = await Promise.all(
         product.rows.map(async (item) => {
           const color = await ProductColor.findAll({
@@ -61,14 +64,35 @@ module.exports = {
             },
           });
 
+          const store = await Store.findAll({
+            where: {
+              id: item.store_id,
+            },
+          });
+
+          const brand = await Brand.findAll({
+            where: {
+              id: item.brand_id,
+            },
+          });
+
+          const category = await Category.findAll({
+            where: {
+              id: item.category_id,
+            },
+          });
+
           const obj = {
+            store,
             product: item,
+            brand,
+            category,
             color,
             image,
             size,
           };
 
-          return obj;
+          return getData.push(obj);
         })
       );
 
@@ -76,7 +100,7 @@ module.exports = {
       return success(res, {
         code: 200,
         message: `Success get all product`,
-        data,
+        data: getData,
         pagination: paging.response,
       });
     } catch (error) {
@@ -183,11 +207,32 @@ module.exports = {
         },
       });
 
+      const store = await Store.findAll({
+        where: {
+          id: product[0].store_id,
+        },
+      });
+
+      const brand = await Brand.findAll({
+        where: {
+          id: product[0].brand_id,
+        },
+      });
+
+      const category = await Category.findAll({
+        where: {
+          id: product[0].category_id,
+        },
+      });
+
       success(res, {
         code: 200,
         message: `Success get user by id`,
         data: {
+          store,
           product: product[0],
+          brand,
+          category,
           color,
           image,
           size,
@@ -252,14 +297,13 @@ module.exports = {
         });
       }
 
-      // Add Product Image
       const { product_image } = req.body;
       if (product_image) {
         product_image.map(async (item) => {
           await ProductImage.create({
             id: uuidv4(),
             product_id: id,
-            ...item,
+            photo: req.file ? req.file.filename : 'default.png',
           });
         });
       }

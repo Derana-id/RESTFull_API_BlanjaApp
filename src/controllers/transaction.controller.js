@@ -30,7 +30,7 @@ module.exports = {
         return failed(res, {
           code: 409,
           message: 'Id not found',
-          error: 'Update Failed',
+          error: 'Insert Failed',
         });
       }
 
@@ -93,6 +93,15 @@ module.exports = {
       await TrunsactionDetail.create(dataTransactionDetail);
 
       const getStock = Number(checkStock[0].stock);
+
+      if (getStock - qty < 0) {
+        return failed(res, {
+          code: 409,
+          message: 'Not enough stock',
+          error: 'Insert Failed',
+        });
+      }
+
       const stock = getStock - qty;
       const setStock = {
         stock: stock,
