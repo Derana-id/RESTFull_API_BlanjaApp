@@ -169,11 +169,11 @@ module.exports = {
           const user = await User.findAll({
             where: {
               id: item.user_id,
-              level: 2,
+              // level: 2,
             },
           });
 
-          let obj = null;
+          let obj;
 
           if (user.length) {
             obj = {
@@ -182,15 +182,17 @@ module.exports = {
             };
           }
 
-          Object.keys(obj).forEach((key) => {
-            if (obj[key] === null) {
-              delete obj[key];
-            }
-          });
-
           return obj;
         })
       );
+
+      // console.log(obj);
+
+      Object.keys(data).forEach((key) => {
+        if (data[key] === null) {
+          delete data[key];
+        }
+      });
 
       const paging = pagination(result.count, page, limit);
       return success(res, {
