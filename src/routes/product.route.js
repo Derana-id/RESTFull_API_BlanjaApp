@@ -16,9 +16,9 @@ const {
 
 const router = express.Router();
 router
-  .get('/product', jwtAuth, getAllProduct)
+  .get('/product', getAllProduct)
   .get('/product/user', jwtAuth, isSeller, getProductByUser)
-  .get('/product/:id', jwtAuth, getProductById)
+  .get('/product/:id', getProductById)
   .post(
     '/product',
     jwtAuth,
