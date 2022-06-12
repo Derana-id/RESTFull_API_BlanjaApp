@@ -157,26 +157,60 @@ module.exports = {
   deleteBrand: async (req, res) => {
     try {
       const id = req.params.id;
+      const { isActive } = req.body;
+
+      const checkIsactive = await ProductBrand.findAll({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!checkIsactive.length) {
+        return failed(res, {
+          code: 409,
+          message: 'Id not found',
+          error: 'Delete brand Failed',
+        });
+      }
+
+      if (checkIsactive[0].is_active == isActive) {
+        if (isActive == 1) {
+          return failed(res, {
+            code: 409,
+            message: `Brand with id ${id} have been active`,
+            error: 'Delete Failed',
+          });
+        } else {
+          return failed(res, {
+            code: 409,
+            message: `Brand with id ${id} have been non active`,
+            error: 'Delete Failed',
+          });
+        }
+      }
+
       const data = {
-        is_active: 0,
+        is_active: isActive,
       };
       const result = await ProductBrand.update(data, {
         where: {
           id: id,
         },
       });
-      if (!result.length) {
-        return failed(res, {
-          code: 409,
-          message: 'Id not found',
-          error: 'Delete Failed',
+
+      if (isActive == 0) {
+        return success(res, {
+          code: 200,
+          message: `Success delete brand with id ${id}`,
+          data: [],
+        });
+      } else {
+        return success(res, {
+          code: 200,
+          message: `Success active brand with id ${id}`,
+          data: [],
         });
       }
-      return success(res, {
-        code: 200,
-        message: `Success delete brand`,
-        data: [],
-      });
     } catch (error) {
       return failed(res, {
         code: 500,
