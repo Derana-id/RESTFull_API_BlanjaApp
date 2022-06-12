@@ -20,6 +20,20 @@ module.exports = {
       price = Number(price);
       qty = Number(qty);
 
+      const checkStock = await Product.findAll({
+        where: {
+          id: productId,
+        },
+      });
+
+      if (!checkStock.length) {
+        return failed(res, {
+          code: 409,
+          message: 'Id not found',
+          error: 'Insert Failed',
+        });
+      }
+
       const date = new Date();
       const dateOffset = new Date(
         date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
@@ -77,6 +91,26 @@ module.exports = {
         is_active: 1,
       };
       await TrunsactionDetail.create(dataTransactionDetail);
+
+      const getStock = Number(checkStock[0].stock);
+
+      if (getStock - qty < 0) {
+        return failed(res, {
+          code: 409,
+          message: 'Not enough stock',
+          error: 'Insert Failed',
+        });
+      }
+
+      const stock = getStock - qty;
+      const setStock = {
+        stock: stock,
+      };
+      await Product.update(setStock, {
+        where: {
+          id: productId,
+        },
+      });
 
       return success(res, {
         code: 200,
