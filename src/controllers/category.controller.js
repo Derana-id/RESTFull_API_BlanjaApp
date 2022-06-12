@@ -17,6 +17,7 @@ module.exports = {
       const condition = search
         ? {
             category_name: { [Op.iLike]: `%${search}%` },
+            is_active: 1,
           }
         : null;
       const offset = (page - 1) * limit;
@@ -53,6 +54,7 @@ module.exports = {
       const result = await Category.findAll({
         where: {
           id: req.params.id,
+          is_active: 1,
         },
       });
       if (!result.length) {
