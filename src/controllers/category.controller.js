@@ -14,19 +14,33 @@ module.exports = {
       limit = Number(limit) || 10;
       sort = sort || 'category_name';
       sortType = sortType || 'ASC';
+
       const condition = search
         ? {
-            category_name: { [Op.iLike]: `%${search}%` },
-            is_active: 1,
+            // category_name: { [Op.iLike]: `%${search}%` },
+
+            [Op.and]: [
+              {
+                is_active: 1,
+              },
+              {
+                category_name: { [Op.iLike]: `%${search}%` },
+              },
+            ],
           }
         : null;
+
       const offset = (page - 1) * limit;
+
       const result = await Category.findAndCountAll({
-        where: condition,
+        where: {
+          is_active: 1,
+        },
         order: [[`${sort}`, `${sortType}`]],
         limit,
         offset,
       });
+
       if (!result.count) {
         return failed(res, {
           code: 404,
@@ -34,6 +48,7 @@ module.exports = {
           error: 'Not Found',
         });
       }
+
       const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
@@ -157,26 +172,60 @@ module.exports = {
   deleteCategory: async (req, res) => {
     try {
       const id = req.params.id;
+      const { isActive } = req.body;
+
+      const checkIsactive = await Category.findAll({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!checkIsactive.length) {
+        return failed(res, {
+          code: 409,
+          message: 'Id not found',
+          error: 'Delete category Failed',
+        });
+      }
+
+      if (checkIsactive[0].is_active == isActive) {
+        if (isActive == 1) {
+          return failed(res, {
+            code: 409,
+            message: `Category with id ${id} have been active`,
+            error: 'Delete Failed',
+          });
+        } else {
+          return failed(res, {
+            code: 409,
+            message: `Category with id ${id} have been non active`,
+            error: 'Delete Failed',
+          });
+        }
+      }
+
       const data = {
-        is_active: 0,
+        is_active: isActive,
       };
       const result = await Category.update(data, {
         where: {
           id: id,
         },
       });
-      if (!result.length) {
-        return failed(res, {
-          code: 409,
-          message: 'Id not found',
-          error: 'Delete Failed',
+
+      if (isActive == 0) {
+        return success(res, {
+          code: 200,
+          message: `Success delete category with id ${id}`,
+          data: [],
+        });
+      } else {
+        return success(res, {
+          code: 200,
+          message: `Success active category with id ${id}`,
+          data: [],
         });
       }
-      return success(res, {
-        code: 200,
-        message: `Success delete category`,
-        data: [],
-      });
     } catch (error) {
       return failed(res, {
         code: 500,
