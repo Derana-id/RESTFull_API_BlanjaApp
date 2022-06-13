@@ -227,7 +227,7 @@ module.exports = {
 
       success(res, {
         code: 200,
-        message: `Success get user by id`,
+        message: `Success get product by id ${id}`,
         data: {
           store,
           product: product[0],
