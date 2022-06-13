@@ -19,7 +19,36 @@ module.exports = {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
       const productId = req.params.id;
-      let { price, qty } = req.body;
+      let { price, qty, isBuy } = req.body;
+
+      if (isBuy == 0) {
+        const cartCheck = await Cart.findAll({
+          where: {
+            product_id: productId,
+            user_id: userId,
+          },
+        });
+        if (!cartCheck.length) {
+          return failed(res, {
+            code: 409,
+            message: 'Id not found',
+            error: 'Insert Failed',
+          });
+        }
+
+        // set qty
+        qty = cartCheck[0].qty;
+      } else {
+        const cart = {
+          id: uuidv4(),
+          user_id: userId,
+          product_id: productId,
+          qty,
+          is_active: 1,
+        };
+
+        await Cart.create(cart);
+      }
       price = Number(price);
       qty = Number(qty);
 
@@ -78,6 +107,7 @@ module.exports = {
           total: total,
           status: 0,
           is_active: 1,
+          is_payment: 0,
         };
       } else {
         data = {
@@ -94,6 +124,7 @@ module.exports = {
           postal_code: address[0].dataValues.postal_code,
           city: address[0].dataValues.city,
           is_active: 1,
+          is_payment: 0,
         };
       }
 
@@ -238,6 +269,7 @@ module.exports = {
 
       const data = {
         payment_method: paymentMethod,
+        is_payment: 1,
       };
 
       const result = await Trunsaction.update(data, {
@@ -260,7 +292,7 @@ module.exports = {
 
       const checkCart = await Cart.findAll({
         where: {
-          product_id: checkProduct[0].dataValues.id,
+          product_id: checkProduct[0].id,
           user_id: userId,
         },
       });
@@ -273,7 +305,6 @@ module.exports = {
           id: checkCart[0].id,
         },
       });
-
       return success(res, {
         code: 200,
         message: `Success update transaction payment`,
@@ -417,6 +448,7 @@ module.exports = {
         where: {
           is_active: 1,
           user_id: userId,
+          is_payment: 0,
         },
         order: [[`${sort}`, `${sortType}`]],
         limit,
