@@ -2,7 +2,9 @@ const { v4: uuidv4 } = require('uuid');
 const Sequelize = require('sequelize');
 const { success, failed } = require('../helpers/response');
 const Cart = require('../models/cart');
-const Buyer = require('../models/profile');
+const ProductColor = require('../models/product_color');
+const ProductImage = require('../models/product_image');
+const ProductSize = require('../models/product_size');
 const Product = require('../models/product');
 
 module.exports = {
@@ -10,15 +12,10 @@ module.exports = {
     try {
       const { id } = req.APP_DATA.tokenDecoded;
 
-      const buyer = await Buyer.findAll({
-        where: {
-          user_id: id,
-        },
-      });
-
       const cart = await Cart.findAll({
         where: {
-          user_id: buyer[0].id,
+          user_id: id,
+          is_active: 1,
         },
       });
 
@@ -36,12 +33,33 @@ module.exports = {
         },
       });
 
+      const image = await ProductImage.findAll({
+        where: {
+          product_id: product[0].id,
+        },
+      });
+
+      const size = await ProductSize.findAll({
+        where: {
+          product_id: product[0].id,
+        },
+      });
+
+      const color = await ProductColor.findAll({
+        where: {
+          product_id: product[0].id,
+        },
+      });
+
       success(res, {
         code: 200,
         message: `Success get cart by user`,
         data: {
           cart,
           product,
+          image,
+          size,
+          color,
         },
       });
     } catch (error) {
@@ -59,6 +77,7 @@ module.exports = {
       const cart = await Cart.findAll({
         where: {
           id,
+          is_active: 1,
         },
       });
 
@@ -96,23 +115,17 @@ module.exports = {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
 
-      const buyer = await Buyer.findAll({
-        where: {
-          user_id: userId,
-        },
-      });
-
       const { product_id, qty } = req.body;
 
       const cart = {
         id: uuidv4(),
-        user_id: buyer[0].id,
+        user_id: userId,
         product_id,
         qty,
         is_active: 1,
       };
 
-      await Product.create(cart);
+      await Cart.create(cart);
 
       return success(res, {
         code: 200,
