@@ -41,10 +41,6 @@ const Product = db.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    rating: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     is_active: {
       type: DataTypes.INTEGER,
       allowNull: false,
