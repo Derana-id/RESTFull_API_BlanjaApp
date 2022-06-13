@@ -112,7 +112,7 @@ module.exports = {
         is_active: 1,
       };
 
-      await Product.create(cart);
+      await Cart.create(cart);
 
       return success(res, {
         code: 200,

@@ -5,6 +5,7 @@ const ProductColor = require('../models/product_color');
 const ProductImage = require('../models/product_image');
 const ProductSize = require('../models/product_size');
 const Address = require('../models/address');
+const Cart = require('../models/cart');
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 const Sequelize = require('sequelize');
@@ -243,6 +244,38 @@ module.exports = {
           id: transactionId,
         },
       });
+
+      // const checkTransactionDetail = await TrunsactionDetail.findAll({
+      //   where: {
+      //     transaction_id: transactionId,
+      //   },
+      // });
+      // // console.log(checkTransactionDetail);
+
+      // const checkProduct = await Product.findAll({
+      //   where: {
+      //     id: checkTransactionDetail[0].product_id,
+      //   },
+      // });
+      // // console.log(checkProduct);
+
+      // const checkCart = await Cart.findAll({
+      //   where: {
+      //     product_id: checkProduct[0].product_id,
+      //     user_id: userId,
+      //   },
+      // });
+      // console.log(checkCart);
+
+      // const dataCart = {
+      //   is_active: 0,
+      // };
+      // await Cart.update(dataCart, {
+      //   where: {
+      //     id: checkCart[0].id,
+      //   },
+      // });
+
       return success(res, {
         code: 200,
         message: `Success update transaction payment`,
