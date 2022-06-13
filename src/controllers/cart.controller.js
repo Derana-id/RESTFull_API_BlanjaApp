@@ -54,13 +54,15 @@ module.exports = {
       success(res, {
         code: 200,
         message: `Success get cart by user`,
-        data: {
-          cart,
-          product,
-          image,
-          size,
-          color,
-        },
+        data: [
+          {
+            cart,
+            product,
+            image,
+            size,
+            color,
+          },
+        ],
       });
     } catch (error) {
       return failed(res, {

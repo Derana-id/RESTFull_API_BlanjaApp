@@ -566,14 +566,16 @@ module.exports = {
         },
       });
 
-      const data = {
-        transaction: result,
-        transactionDetail,
-        product,
-        color,
-        image,
-        size,
-      };
+      const data = [
+        {
+          transaction: result,
+          transactionDetail,
+          product,
+          color,
+          image,
+          size,
+        },
+      ];
 
       return success(res, {
         code: 200,
