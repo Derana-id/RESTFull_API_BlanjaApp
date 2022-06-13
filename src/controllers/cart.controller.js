@@ -246,7 +246,7 @@ module.exports = {
   },
   deleteCartUser: async (req, res) => {
     try {
-      const { id } = req.params;
+      const { id } = req.APP_DATA.tokenDecoded;
 
       const cart = await Cart.findAll({
         where: {
