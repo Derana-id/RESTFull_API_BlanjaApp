@@ -6,6 +6,7 @@ const ProductImage = require('../models/product_image');
 const ProductSize = require('../models/product_size');
 const Address = require('../models/address');
 const Cart = require('../models/cart');
+const Buyer = require('../models/profile');
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 const Sequelize = require('sequelize');
@@ -245,36 +246,33 @@ module.exports = {
         },
       });
 
-      // const checkTransactionDetail = await TrunsactionDetail.findAll({
-      //   where: {
-      //     transaction_id: transactionId,
-      //   },
-      // });
-      // // console.log(checkTransactionDetail);
+      const checkTransactionDetail = await TrunsactionDetail.findAll({
+        where: {
+          transaction_id: transactionId,
+        },
+      });
 
-      // const checkProduct = await Product.findAll({
-      //   where: {
-      //     id: checkTransactionDetail[0].product_id,
-      //   },
-      // });
-      // // console.log(checkProduct);
+      const checkProduct = await Product.findAll({
+        where: {
+          id: checkTransactionDetail[0].product_id,
+        },
+      });
 
-      // const checkCart = await Cart.findAll({
-      //   where: {
-      //     product_id: checkProduct[0].product_id,
-      //     user_id: userId,
-      //   },
-      // });
-      // console.log(checkCart);
+      const checkCart = await Cart.findAll({
+        where: {
+          product_id: checkProduct[0].dataValues.id,
+          user_id: userId,
+        },
+      });
 
-      // const dataCart = {
-      //   is_active: 0,
-      // };
-      // await Cart.update(dataCart, {
-      //   where: {
-      //     id: checkCart[0].id,
-      //   },
-      // });
+      const dataCart = {
+        is_active: 0,
+      };
+      await Cart.update(dataCart, {
+        where: {
+          id: checkCart[0].id,
+        },
+      });
 
       return success(res, {
         code: 200,
@@ -410,15 +408,16 @@ module.exports = {
       const condition = search
         ? {
             recipient_name: { [Op.iLike]: `%${search}%` },
-            is_active: 1,
-            user_id: userId,
           }
         : null;
 
       const offset = (page - 1) * limit;
 
       const result = await Trunsaction.findAndCountAll({
-        where: condition,
+        where: {
+          is_active: 1,
+          user_id: userId,
+        },
         order: [[`${sort}`, `${sortType}`]],
         limit,
         offset,
