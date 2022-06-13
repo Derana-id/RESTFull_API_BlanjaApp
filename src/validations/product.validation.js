@@ -25,9 +25,6 @@ const product = [
   // stock
   check('stock', 'Stock required').not().isEmpty(),
   check('stock', 'Stock only number allowed').isNumeric(),
-  // rating
-  check('rating', 'Rating required').not().isEmpty(),
-  check('rating', 'Rating only number allowed').isNumeric(),
 ];
 
 module.exports = {

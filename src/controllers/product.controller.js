@@ -371,7 +371,6 @@ module.exports = {
         is_new,
         description,
         stock,
-        rating,
       } = req.body;
 
       const data = {
@@ -382,7 +381,6 @@ module.exports = {
         is_new,
         description,
         stock,
-        rating,
       };
 
       await Product.update(data, {
