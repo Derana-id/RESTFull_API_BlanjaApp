@@ -19,6 +19,7 @@ module.exports = {
       const result = await Address.findAndCountAll({
         where: {
           is_active: 1,
+          user_id: userId,
         },
         order: [[`${sort}`, `${sortType}`]],
         limit,
@@ -34,38 +35,9 @@ module.exports = {
       const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
-        message: `Success get all address by id ${userId}`,
+        message: `Success get all my address by user id ${userId}`,
         data: result.rows,
         pagination: paging.response,
-      });
-    } catch (error) {
-      return failed(res, {
-        code: 500,
-        message: error.message,
-        error: 'Internal Server Error',
-      });
-    }
-  },
-  getAllAddress: async (req, res) => {
-    try {
-      const userId = req.params.userId;
-      const result = await Address.findAll({
-        where: {
-          user_id: userId,
-          is_active: 1,
-        },
-      });
-      if (!result.length) {
-        return failed(res, {
-          code: 409,
-          message: 'Addres not found',
-          error: 'Get All Failed',
-        });
-      }
-      return success(res, {
-        code: 200,
-        message: `Success get all address by id ${userId}`,
-        data: result,
       });
     } catch (error) {
       return failed(res, {

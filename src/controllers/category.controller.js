@@ -4,6 +4,8 @@ const { success, failed } = require('../helpers/response');
 const deleteFile = require('../utils/deleteFile');
 const Sequelize = require('sequelize');
 const pagination = require('../utils/pagination');
+const uploadGoogleDrive = require('../utils/uploadGoogleDrive');
+const deleteGoogleDrive = require('../utils/deleteGoogleDrive');
 
 module.exports = {
   getPublicCategory: async (req, res) => {
@@ -57,6 +59,8 @@ module.exports = {
   },
   getAllCategory: async (req, res) => {
     try {
+      // const { level } = req.APP_DATA.tokenDecoded;
+      // console.log(level);
       const Op = Sequelize.Op;
       let { page, limit, search, sort, sortType } = req.query;
       page = Number(page) || 1;
@@ -142,13 +146,20 @@ module.exports = {
         });
         return;
       }
-      const image = req.file.filename;
+
+      let photo;
+      if (req.file) {
+        const photoGd = await uploadGoogleDrive(req.file);
+        photo = photoGd.id;
+      }
+
       const data = {
         id: id,
         category_name: categoryName,
-        photo: image,
+        photo: photo,
         is_active: 1,
       };
+
       const result = await Category.create(data);
       return success(res, {
         code: 200,
@@ -156,6 +167,9 @@ module.exports = {
         data: data,
       });
     } catch (error) {
+      if (req.file) {
+        deleteFile(req.file.path);
+      }
       return failed(res, {
         code: 500,
         message: error.message,
@@ -168,25 +182,30 @@ module.exports = {
       const id = req.params.id;
       const { categoryName } = req.body;
       const dataPhoto = await Category.findByPk(id);
-      // console.log(dataPhoto.dataValues);
       if (!dataPhoto.dataValues) {
+        if (req.file) {
+          deleteFile(req.file.path);
+        }
         return failed(res, {
           code: 409,
           message: 'Id not found',
           error: 'Update Failed',
         });
       }
-      const getPhoto = dataPhoto.dataValues.photo;
-      let image;
+
+      let photo = dataPhoto.dataValues.photo;
       if (req.file) {
-        image = req.file.filename;
-        deleteFile(`public/uploads/categories/${getPhoto}`);
-      } else {
-        image = getPhoto;
+        if (photo) {
+          deleteGoogleDrive(photo);
+        }
+        const photoGd = await uploadGoogleDrive(req.file);
+        photo = photoGd.id;
+        deleteFile(req.file.path);
       }
+
       const data = {
         category_name: categoryName,
-        photo: image,
+        photo: photo,
         is_active: 1,
       };
       const result = await Category.update(data, {
@@ -200,6 +219,9 @@ module.exports = {
         data: data,
       });
     } catch (error) {
+      if (req.file) {
+        deleteFile(req.file.path);
+      }
       return failed(res, {
         code: 500,
         message: error.message,
