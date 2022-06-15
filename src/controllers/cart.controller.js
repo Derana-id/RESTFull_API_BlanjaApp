@@ -2,25 +2,24 @@ const { v4: uuidv4 } = require('uuid');
 const Sequelize = require('sequelize');
 const { success, failed } = require('../helpers/response');
 const Cart = require('../models/cart');
-const Buyer = require('../models/profile');
+const ProductColor = require('../models/product_color');
+const ProductImage = require('../models/product_image');
+const ProductSize = require('../models/product_size');
 const Product = require('../models/product');
+const Store = require('../models/store');
 
 module.exports = {
   getCartByUser: async (req, res) => {
     try {
       const { id } = req.APP_DATA.tokenDecoded;
 
-      const buyer = await Buyer.findAll({
-        where: {
-          user_id: id,
-        },
-      });
-
       const cart = await Cart.findAll({
         where: {
-          user_id: buyer[0].id,
+          user_id: id,
+          is_active: 1,
         },
       });
+      // console.log(cart);
 
       if (!cart.length) {
         return failed(res, {
@@ -30,19 +29,60 @@ module.exports = {
         });
       }
 
-      const product = await Product.findAll({
-        where: {
-          id: cart[0].product_id,
-        },
-      });
+      let getData = [];
+      const data = await Promise.all(
+        cart.map(async (item, index) => {
+          const product = await Product.findAll({
+            where: {
+              id: item.product_id,
+            },
+          });
+
+          const dataProduct = await Promise.all(
+            product.map(async (e, i) => {
+              const image = await ProductImage.findAll({
+                where: {
+                  product_id: e.id,
+                },
+              });
+
+              const size = await ProductSize.findAll({
+                where: {
+                  product_id: e.id,
+                },
+              });
+
+              const color = await ProductColor.findAll({
+                where: {
+                  product_id: e.id,
+                },
+              });
+
+              const getStore = await Store.findAll({
+                where: {
+                  id: e.store_id,
+                },
+              });
+
+              const obj = {
+                cart: item,
+                product,
+                image,
+                size,
+                color,
+                store: getStore,
+              };
+
+              return getData.push(obj);
+            })
+          );
+        })
+      );
 
       success(res, {
         code: 200,
         message: `Success get cart by user`,
-        data: {
-          cart,
-          product,
-        },
+        data: getData,
       });
     } catch (error) {
       return failed(res, {
@@ -59,6 +99,7 @@ module.exports = {
       const cart = await Cart.findAll({
         where: {
           id,
+          is_active: 1,
         },
       });
 
@@ -96,23 +137,17 @@ module.exports = {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
 
-      const buyer = await Buyer.findAll({
-        where: {
-          user_id: userId,
-        },
-      });
-
       const { product_id, qty } = req.body;
 
       const cart = {
         id: uuidv4(),
-        user_id: buyer[0].id,
+        user_id: userId,
         product_id,
         qty,
         is_active: 1,
       };
 
-      await Product.create(cart);
+      await Cart.create(cart);
 
       return success(res, {
         code: 200,
@@ -171,7 +206,11 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const cart = await Cart.findByPk(id);
+      const cart = await Cart.findAll({
+        where: {
+          id,
+        },
+      });
 
       if (!cart.length) {
         return failed(res, {
@@ -188,6 +227,48 @@ module.exports = {
         {
           where: {
             id,
+          },
+        }
+      );
+
+      return success(res, {
+        code: 200,
+        message: 'Success Delete Cart',
+        data: null,
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  deleteCartUser: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const cart = await Cart.findAll({
+        where: {
+          user_id: id,
+        },
+      });
+
+      if (!cart.length) {
+        return failed(res, {
+          code: 404,
+          message: `Cart by id ${id} not found`,
+          error: 'Not Found',
+        });
+      }
+
+      await Cart.update(
+        {
+          is_active: 0,
+        },
+        {
+          where: {
+            user_id: id,
           },
         }
       );

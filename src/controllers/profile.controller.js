@@ -205,7 +205,7 @@ module.exports = {
       const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
-        message: `Success get all store`,
+        message: `Success get all profile`,
         data: results,
         pagination: paging.response,
       });

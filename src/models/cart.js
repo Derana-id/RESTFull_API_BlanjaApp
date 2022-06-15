@@ -11,19 +11,19 @@ const Cart = db.define(
     },
     user_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
     },
     product_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
     },
     qty: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     is_active: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {

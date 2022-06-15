@@ -14,16 +14,12 @@ module.exports = {
       limit = Number(limit) || 10;
       sort = sort || 'label';
       sortType = sortType || 'ASC';
-      const condition = search
-        ? {
-            recipient_name: { [Op.iLike]: `%${search}%` },
-            is_active: 1,
-            user_id: userId,
-          }
-        : null;
+
       const offset = (page - 1) * limit;
       const result = await Address.findAndCountAll({
-        where: condition,
+        where: {
+          is_active: 1,
+        },
         order: [[`${sort}`, `${sortType}`]],
         limit,
         offset,
