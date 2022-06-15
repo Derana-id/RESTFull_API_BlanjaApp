@@ -166,7 +166,7 @@ module.exports = {
         id: transactionId,
         amount: total,
       };
-      const midtransNotif = await createTransaction(transData);
+      const midtransNotif = await post(transData);
 
       return success(res, {
         code: 200,
