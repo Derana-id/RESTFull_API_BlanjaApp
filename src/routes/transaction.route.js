@@ -21,7 +21,7 @@ const validation = require('../middlewares/validation');
 const router = express.Router();
 
 router
-  .post('/transaction/midtrans-notification', postNotifMidtrans)
+  // .post('/transaction/midtrans-notification', postNotifMidtrans)
   .post(
     '/transaction/:id',
     jwtAuth,
