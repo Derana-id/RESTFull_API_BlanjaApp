@@ -1,4 +1,4 @@
-const TrunsactionDetail = require('../models/transaction_detail');
+const TransactionDetail = require('../models/transaction_detail');
 const { success, failed } = require('../helpers/response');
 
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
       const data = {
         is_active: 0,
       };
-      const result = await TrunsactionDetail.update(data, {
+      const result = await TransactionDetail.update(data, {
         where: {
           transaction_id: transactionId,
         },
@@ -39,9 +39,9 @@ module.exports = {
       const data = {
         is_active: 0,
       };
-      const result = await TrunsactionDetail.update(data, {
+      const result = await TransactionDetail.update(data, {
         where: {
-          transaction_id: id,
+          id: id,
         },
       });
       if (!result.length) {

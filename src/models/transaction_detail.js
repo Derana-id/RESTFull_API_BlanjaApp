@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/pg');
 
-const TrunsactionDetail = db.define(
+const TransactionDetail = db.define(
   'transaction_detail',
   {
     id: {
@@ -35,4 +35,4 @@ const TrunsactionDetail = db.define(
   }
 );
 
-module.exports = TrunsactionDetail;
+module.exports = TransactionDetail;

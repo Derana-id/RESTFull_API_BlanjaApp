@@ -19,12 +19,11 @@ module.exports = {
           is_active: 1,
         },
       });
-      // console.log(cart);
 
       if (!cart.length) {
         return failed(res, {
           code: 404,
-          message: `Cart by id ${id} not found`,
+          message: `Cart by user id ${id} not found`,
           error: 'Not Found',
         });
       }
@@ -205,79 +204,72 @@ module.exports = {
   deleteCart: async (req, res) => {
     try {
       const { id } = req.params;
+      const userId = req.APP_DATA.tokenDecoded.id;
 
-      const cart = await Cart.findAll({
-        where: {
-          id,
-        },
-      });
-
-      if (!cart.length) {
-        return failed(res, {
-          code: 404,
-          message: `Cart by id ${id} not found`,
-          error: 'Not Found',
-        });
-      }
-
-      await Cart.update(
-        {
-          is_active: 0,
-        },
-        {
-          where: {
-            id,
-          },
-        }
-      );
-
-      return success(res, {
-        code: 200,
-        message: 'Success Delete Cart',
-        data: null,
-      });
-    } catch (error) {
-      return failed(res, {
-        code: 500,
-        message: error.message,
-        error: 'Internal Server Error',
-      });
-    }
-  },
-  deleteCartUser: async (req, res) => {
-    try {
-      const { id } = req.params;
-
-      const cart = await Cart.findAll({
-        where: {
-          user_id: id,
-        },
-      });
-
-      if (!cart.length) {
-        return failed(res, {
-          code: 404,
-          message: `Cart by id ${id} not found`,
-          error: 'Not Found',
-        });
-      }
-
-      await Cart.update(
-        {
-          is_active: 0,
-        },
-        {
+      // cek id params = id login
+      if (id == userId) {
+        const cart = await Cart.findAll({
           where: {
             user_id: id,
           },
-        }
-      );
+        });
 
-      return success(res, {
-        code: 200,
-        message: 'Success Delete Cart',
-        data: null,
-      });
+        if (!cart.length) {
+          return failed(res, {
+            code: 404,
+            message: `Cart by id ${id} not found`,
+            error: 'Not Found',
+          });
+        }
+
+        await Cart.update(
+          {
+            is_active: 0,
+          },
+          {
+            where: {
+              user_id: id,
+            },
+          }
+        );
+
+        return success(res, {
+          code: 200,
+          message: 'Success Delete Cart',
+          data: null,
+        });
+      } else {
+        const cart = await Cart.findAll({
+          where: {
+            id,
+          },
+        });
+
+        if (!cart.length) {
+          return failed(res, {
+            code: 404,
+            message: `Cart by id ${id} not found`,
+            error: 'Not Found',
+          });
+        }
+
+        await Cart.update(
+          {
+            is_active: 0,
+          },
+          {
+            where: {
+              id,
+            },
+          }
+        );
+
+        return success(res, {
+          code: 200,
+          message: 'Success Delete Cart',
+          data: null,
+        });
+      }
     } catch (error) {
       return failed(res, {
         code: 500,

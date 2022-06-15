@@ -4,7 +4,7 @@ const jwtAuth = require('../middlewares/jwtAuth');
 const { isSeller } = require('../middlewares/authorization');
 const { product } = require('../validations/product.validation');
 const validation = require('../middlewares/validation');
-const upload = require('../middlewares/uploadProduct');
+const upload = require('../middlewares/uploads');
 const {
   getAllProduct,
   getProductByUser,

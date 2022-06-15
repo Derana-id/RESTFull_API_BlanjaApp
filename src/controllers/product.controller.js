@@ -158,12 +158,14 @@ module.exports = {
       success(res, {
         code: 200,
         message: `Success get product by user`,
-        data: {
-          product,
-          color,
-          image,
-          size,
-        },
+        data: [
+          {
+            product,
+            color,
+            image,
+            size,
+          },
+        ],
       });
     } catch (error) {
       return failed(res, {
@@ -379,7 +381,6 @@ module.exports = {
         is_new,
         description,
         stock,
-        rating,
       } = req.body;
 
       const data = {
@@ -390,7 +391,6 @@ module.exports = {
         is_new,
         description,
         stock,
-        rating,
       };
 
       await Product.update(data, {
