@@ -6,11 +6,11 @@ const ProductImage = require('../models/product_image');
 const ProductSize = require('../models/product_size');
 const Address = require('../models/address');
 const Cart = require('../models/cart');
-const Buyer = require('../models/profile');
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 const Sequelize = require('sequelize');
 const pagination = require('../utils/pagination');
+const { post, notif } = require('../utils/midtrans');
 const Op = Sequelize.Op;
 const RandomCodes = require('random-codes');
 
@@ -128,7 +128,7 @@ module.exports = {
         };
       }
 
-      const result = await Transaction.create(data);
+      await Transaction.create(data);
 
       const dataTransactionDetail = {
         id: uuidv4(),
@@ -160,10 +160,19 @@ module.exports = {
         },
       });
 
+      // configurate midtrans
+      const transData = {
+        id: transactionId,
+        amount: total,
+      };
+      const midtransNotif = await post(transData);
+
       return success(res, {
         code: 200,
-        message: `Success insert transaction`,
-        data: data,
+        message: `Please complete your payment`,
+        data: {
+          redirectUrl: midtransNotif,
+        },
       });
     } catch (error) {
       return failed(res, {
@@ -532,6 +541,97 @@ module.exports = {
         code: 200,
         message: `Success delete transaction with id ${transactionId}`,
         data: [],
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  postNotifMidtrans: async (req, res) => {
+    try {
+      const notifMidtrans = await notif(req.body);
+      const { orderId, transactionStatus, fraudStatus } = notifMidtrans;
+
+      if (transactionStatus === 'capture') {
+        if (fraudStatus === 'challenge') {
+          await Transaction.update(
+            {
+              transaction_status: 'challenge',
+            },
+            {
+              where: {
+                id: orderId,
+              },
+            }
+          );
+        } else if (fraudStatus === 'accept') {
+          await Transaction.update(
+            {
+              transaction_status: 'success',
+            },
+            {
+              where: {
+                id: orderId,
+              },
+            }
+          );
+        }
+      } else if (transactionStatus === 'settlement') {
+        await Transaction.update(
+          {
+            transaction_status: 'success',
+          },
+          {
+            where: {
+              id: orderId,
+            },
+          }
+        );
+      } else if (transactionStatus === 'deny') {
+        await Transaction.update(
+          {
+            transaction_status: 'failed',
+          },
+          {
+            where: {
+              id: orderId,
+            },
+          }
+        );
+      } else if (
+        transactionStatus === 'cancel' ||
+        transactionStatus === 'expire'
+      ) {
+        await Transaction.update(
+          {
+            transaction_status: 'failed',
+          },
+          {
+            where: {
+              id: orderId,
+            },
+          }
+        );
+      } else if (transactionStatus === 'pending') {
+        await Transaction.update(
+          {
+            transaction_status: 'pending',
+          },
+          {
+            where: {
+              id: orderId,
+            },
+          }
+        );
+      }
+
+      return success(res, {
+        code: 200,
+        message: 'Transaction Successfully',
+        data: notifMidtrans,
       });
     } catch (error) {
       return failed(res, {

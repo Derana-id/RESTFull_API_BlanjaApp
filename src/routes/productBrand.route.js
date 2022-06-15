@@ -16,7 +16,7 @@ const validation = require('../middlewares/validation');
 
 const jwtAuth = require('../middlewares/jwtAuth');
 const { isAdmin } = require('../middlewares/authorization');
-const brandUpload = require('../middlewares/uploadProductBrand');
+const brandUpload = require('../middlewares/uploads');
 
 const router = express.Router();
 

@@ -4,6 +4,8 @@ const { success, failed } = require('../helpers/response');
 const deleteFile = require('../utils/deleteFile');
 const Sequelize = require('sequelize');
 const pagination = require('../utils/pagination');
+const uploadGoogleDrive = require('../utils/uploadGoogleDrive');
+const deleteGoogleDrive = require('../utils/deleteGoogleDrive');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -71,7 +73,7 @@ module.exports = {
 
       if (!profile.length) {
         if (req.file) {
-          deleteFile(`public/uploads/users/${req.file.filename}`);
+          deleteFile(req.file.path);
         }
         return failed(res, {
           code: 404,
@@ -80,12 +82,18 @@ module.exports = {
         });
       }
 
+      // upload image to google drive
       let { photo } = profile[0];
       if (req.file) {
-        if (photo !== 'default.png') {
-          deleteFile(`public/uploads/users/${photo}`);
+        if (photo) {
+          // remove old image except default image
+          deleteGoogleDrive(photo);
         }
-        photo = req.file.filename;
+        // upload new image to google drive
+        const photoGd = await uploadGoogleDrive(req.file);
+        photo = photoGd.id;
+        // remove image after upload
+        deleteFile(req.file.path);
       }
 
       await Profile.update(
@@ -121,7 +129,7 @@ module.exports = {
       });
     } catch (error) {
       if (req.file) {
-        deleteFile(`public/uploads/users/${req.file.filename}`);
+        deleteFile(req.file.path);
       }
       return failed(res, {
         code: 500,

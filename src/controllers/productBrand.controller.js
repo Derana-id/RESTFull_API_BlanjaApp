@@ -4,6 +4,8 @@ const { success, failed } = require('../helpers/response');
 const deleteFile = require('../utils/deleteFile');
 const Sequelize = require('sequelize');
 const pagination = require('../utils/pagination');
+const uploadGoogleDrive = require('../utils/uploadGoogleDrive');
+const deleteGoogleDrive = require('../utils/deleteGoogleDrive');
 
 module.exports = {
   getAllBrand: async (req, res) => {
@@ -113,13 +115,20 @@ module.exports = {
         });
         return;
       }
-      const image = req.file.filename;
+
+      let photo;
+      if (req.file) {
+        const photoGd = await uploadGoogleDrive(req.file);
+        photo = photoGd.id;
+      }
+
       const data = {
         id: id,
         brand_name: brandName,
-        photo: image,
+        photo: photo,
         is_active: 1,
       };
+
       const result = await ProductBrand.create(data);
       return success(res, {
         code: 200,
@@ -127,6 +136,9 @@ module.exports = {
         data: data,
       });
     } catch (error) {
+      if (req.file) {
+        deleteFile(req.file.path);
+      }
       return failed(res, {
         code: 500,
         message: error.message,
@@ -139,7 +151,7 @@ module.exports = {
       const id = req.params.id;
       const { brandName } = req.body;
       const dataPhoto = await ProductBrand.findByPk(id);
-      // console.log(dataPhoto.dataValues);
+
       if (!dataPhoto.dataValues) {
         return failed(res, {
           code: 409,
@@ -147,19 +159,23 @@ module.exports = {
           error: 'Update Failed',
         });
       }
-      const getPhoto = dataPhoto.dataValues.photo;
-      let image;
+
+      let photo = dataPhoto.dataValues.photo;
       if (req.file) {
-        image = req.file.filename;
-        deleteFile(`public/uploads/brands/${getPhoto}`);
-      } else {
-        image = getPhoto;
+        if (photo) {
+          deleteGoogleDrive(photo);
+        }
+        const photoGd = await uploadGoogleDrive(req.file);
+        photo = photoGd.id;
+        deleteFile(req.file.path);
       }
+
       const data = {
         brand_name: brandName,
-        photo: image,
+        photo: photo,
         is_active: 1,
       };
+
       const result = await ProductBrand.update(data, {
         where: {
           id: id,
@@ -171,6 +187,9 @@ module.exports = {
         data: data,
       });
     } catch (error) {
+      if (req.file) {
+        deleteFile(req.file.path);
+      }
       return failed(res, {
         code: 500,
         message: error.message,

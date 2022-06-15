@@ -17,13 +17,13 @@ const validation = require('../middlewares/validation');
 
 const jwtAuth = require('../middlewares/jwtAuth');
 const { isAdmin } = require('../middlewares/authorization');
-const categoryUpload = require('../middlewares/uploadCategory');
+const categoryUpload = require('../middlewares/uploads');
 
 const router = express.Router();
 
 router
   .get('/category', getAllCategory)
-  .get('/category/public', getPublicCategory) // di hapus pindah ke /category cek level - cek is_active
+  .get('/category/public', getPublicCategory)
   .get('/category/:id', getCategoryId)
   .post(
     '/category',
