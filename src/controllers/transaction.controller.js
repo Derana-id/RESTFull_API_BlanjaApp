@@ -5,19 +5,51 @@ const ProductColor = require('../models/product_color');
 const ProductImage = require('../models/product_image');
 const ProductSize = require('../models/product_size');
 const Address = require('../models/address');
+const Cart = require('../models/cart');
+const Buyer = require('../models/profile');
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 const Sequelize = require('sequelize');
 const pagination = require('../utils/pagination');
 const { post, notif } = require('../utils/midtrans');
 const Op = Sequelize.Op;
+const RandomCodes = require('random-codes');
 
 module.exports = {
   insertTransaction: async (req, res) => {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
       const productId = req.params.id;
-      let { price, qty } = req.body;
+      let { price, qty, isBuy } = req.body;
+
+      if (isBuy == 0) {
+        const cartCheck = await Cart.findAll({
+          where: {
+            product_id: productId,
+            user_id: userId,
+          },
+        });
+        if (!cartCheck.length) {
+          return failed(res, {
+            code: 409,
+            message: 'Id not found',
+            error: 'Insert Failed',
+          });
+        }
+
+        // set qty
+        qty = cartCheck[0].qty;
+      } else {
+        const cart = {
+          id: uuidv4(),
+          user_id: userId,
+          product_id: productId,
+          qty,
+          is_active: 1,
+        };
+
+        await Cart.create(cart);
+      }
       price = Number(price);
       qty = Number(qty);
 
@@ -51,23 +83,38 @@ module.exports = {
       });
       // console.log(address[0].dataValues);
 
+      const config = {
+        chars: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        separator: '-',
+        mask: '*',
+        parts: 3,
+        part_size: 4,
+        getChar: function (pool) {
+          var random = Math.floor(Math.random() * pool.length);
+          return pool.charAt(random);
+        },
+      };
+      const rc = new RandomCodes(config);
+
       let data;
+      const code = rc.generate();
       const transactionId = uuidv4();
       if (!address.length) {
         data = {
           id: transactionId,
           user_id: userId,
-          invoice: `INV-${getDate}`,
+          invoice: code,
           date: getDate,
           total: total,
           status: 0,
           is_active: 1,
+          is_payment: 0,
         };
       } else {
         data = {
           id: transactionId,
           user_id: userId,
-          invoice: `invoice${getDate}`,
+          invoice: code,
           date: getDate,
           total: total,
           status: 0,
@@ -78,6 +125,7 @@ module.exports = {
           postal_code: address[0].dataValues.postal_code,
           city: address[0].dataValues.city,
           is_active: 1,
+          is_payment: 0,
         };
       }
 
@@ -231,11 +279,40 @@ module.exports = {
 
       const data = {
         payment_method: paymentMethod,
+        is_payment: 1,
       };
 
       const result = await Transaction.update(data, {
         where: {
           id: transactionId,
+        },
+      });
+
+      const checkTransactionDetail = await TrunsactionDetail.findAll({
+        where: {
+          transaction_id: transactionId,
+        },
+      });
+
+      const checkProduct = await Product.findAll({
+        where: {
+          id: checkTransactionDetail[0].product_id,
+        },
+      });
+
+      const checkCart = await Cart.findAll({
+        where: {
+          product_id: checkProduct[0].id,
+          user_id: userId,
+        },
+      });
+
+      const dataCart = {
+        is_active: 0,
+      };
+      await Cart.update(dataCart, {
+        where: {
+          id: checkCart[0].id,
         },
       });
       return success(res, {
@@ -372,15 +449,18 @@ module.exports = {
       const condition = search
         ? {
             recipient_name: { [Op.iLike]: `%${search}%` },
-            is_active: 1,
-            user_id: userId,
           }
         : null;
 
       const offset = (page - 1) * limit;
 
-      const result = await Transaction.findAndCountAll({
-        where: condition,
+
+      const result = await Trunsaction.findAndCountAll({
+        where: {
+          is_active: 1,
+          user_id: userId,
+          is_payment: 0,
+        },
         order: [[`${sort}`, `${sortType}`]],
         limit,
         offset,
@@ -497,14 +577,16 @@ module.exports = {
         },
       });
 
-      const data = {
-        transaction: result,
-        transactionDetail,
-        product,
-        color,
-        image,
-        size,
-      };
+      const data = [
+        {
+          transaction: result,
+          transactionDetail,
+          product,
+          color,
+          image,
+          size,
+        },
+      ];
 
       return success(res, {
         code: 200,

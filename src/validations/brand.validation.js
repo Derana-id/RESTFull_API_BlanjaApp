@@ -17,9 +17,6 @@ const updateValidation = [
 ];
 
 const deleteValidation = [
-  // id
-  check('id', 'id cannot be empty').not().isEmpty(),
-
   // is active
   check('isActive', 'isActive cannot be empty').not().isEmpty(),
   check('isActive', 'isActive only number 0 or 1').isNumeric(),

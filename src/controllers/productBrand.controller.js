@@ -6,6 +6,51 @@ const Sequelize = require('sequelize');
 const pagination = require('../utils/pagination');
 
 module.exports = {
+  getPublicBrand: async (req, res) => {
+    try {
+      const Op = Sequelize.Op;
+      let { page, limit, search, sort, sortType } = req.query;
+      page = Number(page) || 1;
+      limit = Number(limit) || 10;
+      sort = sort || 'brand_name';
+      sortType = sortType || 'ASC';
+      const condition = search
+        ? {
+            brand_name: { [Op.iLike]: `%${search}%` },
+          }
+        : null;
+      const active = condition
+        ? { is_active: 1, ...condition }
+        : { is_active: 1 };
+      const offset = (page - 1) * limit;
+      const result = await ProductBrand.findAndCountAll({
+        where: active,
+        order: [[`${sort}`, `${sortType}`]],
+        limit,
+        offset,
+      });
+      if (!result.count) {
+        return failed(res, {
+          code: 404,
+          message: 'Brand Not Found',
+          error: 'Not Found',
+        });
+      }
+      const paging = pagination(result.count, page, limit);
+      return success(res, {
+        code: 200,
+        message: `Success get all brand`,
+        data: result.rows,
+        pagination: paging.response,
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
   getAllBrand: async (req, res) => {
     try {
       const Op = Sequelize.Op;
@@ -17,7 +62,6 @@ module.exports = {
       const condition = search
         ? {
             brand_name: { [Op.iLike]: `%${search}%` },
-            is_active: 1,
           }
         : null;
       const offset = (page - 1) * limit;
@@ -157,26 +201,60 @@ module.exports = {
   deleteBrand: async (req, res) => {
     try {
       const id = req.params.id;
+      const { isActive } = req.body;
+
+      const checkIsactive = await ProductBrand.findAll({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!checkIsactive.length) {
+        return failed(res, {
+          code: 409,
+          message: 'Id not found',
+          error: 'Delete brand Failed',
+        });
+      }
+
+      if (checkIsactive[0].is_active == isActive) {
+        if (isActive == 1) {
+          return failed(res, {
+            code: 409,
+            message: `Brand with id ${id} have been active`,
+            error: 'Delete Failed',
+          });
+        } else {
+          return failed(res, {
+            code: 409,
+            message: `Brand with id ${id} have been non active`,
+            error: 'Delete Failed',
+          });
+        }
+      }
+
       const data = {
-        is_active: 0,
+        is_active: isActive,
       };
       const result = await ProductBrand.update(data, {
         where: {
           id: id,
         },
       });
-      if (!result.length) {
-        return failed(res, {
-          code: 409,
-          message: 'Id not found',
-          error: 'Delete Failed',
+
+      if (isActive == 0) {
+        return success(res, {
+          code: 200,
+          message: `Success delete brand with id ${id}`,
+          data: [],
+        });
+      } else {
+        return success(res, {
+          code: 200,
+          message: `Success active brand with id ${id}`,
+          data: [],
         });
       }
-      return success(res, {
-        code: 200,
-        message: `Success delete brand`,
-        data: [],
-      });
     } catch (error) {
       return failed(res, {
         code: 500,

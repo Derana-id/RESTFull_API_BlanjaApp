@@ -227,7 +227,7 @@ module.exports = {
 
       success(res, {
         code: 200,
-        message: `Success get user by id`,
+        message: `Success get product by id ${id}`,
         data: {
           store,
           product: product[0],
@@ -309,13 +309,29 @@ module.exports = {
       }
 
       // Add Product Size
+      const { size } = req.body;
+      let getSize;
+      if (size <= 50 && size >= 41) {
+        getSize = 'XL';
+      } else if (size <= 40 && size >= 31) {
+        getSize = 'L';
+      } else if (size <= 30 && size >= 26) {
+        getSize = 'M';
+      } else if (size <= 25 && size >= 21) {
+        getSize = 'S';
+      } else if (size <= 20 && size >= 16) {
+        getSize = 'XS';
+      } else {
+        getSize = 'M';
+      }
+
       const { product_size } = req.body;
       if (product_size) {
         product_size.map(async (item) => {
           await ProductSize.create({
             id: uuidv4(),
             product_id: id,
-            ...item,
+            size: getSize,
           });
         });
       }

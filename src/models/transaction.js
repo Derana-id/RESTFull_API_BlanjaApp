@@ -61,6 +61,18 @@ const Trunsaction = db.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    transaction_number: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    transaction_status: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    is_payment: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     freezeTableName: true,
