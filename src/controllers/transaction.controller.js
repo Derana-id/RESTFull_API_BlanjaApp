@@ -1,5 +1,5 @@
-const Trunsaction = require('../models/transaction');
-const TrunsactionDetail = require('../models/transaction_detail');
+const Transaction = require('../models/transaction');
+const TransactionDetail = require('../models/transaction_detail');
 const Product = require('../models/product.js');
 const ProductColor = require('../models/product_color');
 const ProductImage = require('../models/product_image');
@@ -9,10 +9,11 @@ const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 const Sequelize = require('sequelize');
 const pagination = require('../utils/pagination');
+const { post, notif } = require('../utils/midtrans');
 const Op = Sequelize.Op;
 
 module.exports = {
-  insertTrunsaction: async (req, res) => {
+  insertTransaction: async (req, res) => {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
       const productId = req.params.id;
@@ -80,7 +81,7 @@ module.exports = {
         };
       }
 
-      const result = await Trunsaction.create(data);
+      await Transaction.create(data);
 
       const dataTransactionDetail = {
         id: uuidv4(),
@@ -90,7 +91,7 @@ module.exports = {
         qty: qty,
         is_active: 1,
       };
-      await TrunsactionDetail.create(dataTransactionDetail);
+      await TransactionDetail.create(dataTransactionDetail);
 
       const getStock = Number(checkStock[0].stock);
 
@@ -112,10 +113,19 @@ module.exports = {
         },
       });
 
+      // configurate midtrans
+      const transData = {
+        id: transactionId,
+        amount: total,
+      };
+      const midtransNotif = await createTransaction(transData);
+
       return success(res, {
         code: 200,
-        message: `Success insert transaction`,
-        data: data,
+        message: `Please complete your payment`,
+        data: {
+          redirectUrl: midtransNotif,
+        },
       });
     } catch (error) {
       return failed(res, {
@@ -139,7 +149,7 @@ module.exports = {
         isPrimary,
       } = req.body;
 
-      const checkTransactionId = await Trunsaction.findAll({
+      const checkTransactionId = await Transaction.findAll({
         where: {
           id: transactionId,
         },
@@ -195,7 +205,7 @@ module.exports = {
         is_active: 1,
       };
       await Address.create(dataAddress);
-      const updateTransaction = await Trunsaction.update(dataTransaction, {
+      const updateTransaction = await Transaction.update(dataTransaction, {
         where: {
           id: transactionId,
         },
@@ -223,7 +233,7 @@ module.exports = {
         payment_method: paymentMethod,
       };
 
-      const result = await Trunsaction.update(data, {
+      const result = await Transaction.update(data, {
         where: {
           id: transactionId,
         },
@@ -267,7 +277,7 @@ module.exports = {
 
       const offset = (page - 1) * limit;
 
-      const result = await Trunsaction.findAndCountAll({
+      const result = await Transaction.findAndCountAll({
         where: condition,
         order: [[`${sort}`, `${sortType}`]],
         limit,
@@ -284,7 +294,7 @@ module.exports = {
       let getData = [];
       const data = await Promise.all(
         result.rows.map(async (item) => {
-          const transactionDetail = await TrunsactionDetail.findAll({
+          const transactionDetail = await TransactionDetail.findAll({
             where: {
               transaction_id: item.id,
             },
@@ -369,7 +379,7 @@ module.exports = {
 
       const offset = (page - 1) * limit;
 
-      const result = await Trunsaction.findAndCountAll({
+      const result = await Transaction.findAndCountAll({
         where: condition,
         order: [[`${sort}`, `${sortType}`]],
         limit,
@@ -386,7 +396,7 @@ module.exports = {
       let getData = [];
       const data = await Promise.all(
         result.rows.map(async (item) => {
-          const transactionDetail = await TrunsactionDetail.findAll({
+          const transactionDetail = await TransactionDetail.findAll({
             where: {
               transaction_id: item.id,
             },
@@ -455,9 +465,9 @@ module.exports = {
   getTransactionId: async (req, res) => {
     try {
       const id = req.params.id;
-      const result = await Trunsaction.findByPk(id);
+      const result = await Transaction.findByPk(id);
 
-      const transactionDetail = await TrunsactionDetail.findAll({
+      const transactionDetail = await TransactionDetail.findAll({
         where: {
           transaction_id: id,
         },
@@ -515,7 +525,7 @@ module.exports = {
       const data = {
         is_active: 0,
       };
-      const result = await Trunsaction.update(data, {
+      const result = await Transaction.update(data, {
         where: {
           id: transactionId,
         },
@@ -531,6 +541,94 @@ module.exports = {
         code: 200,
         message: `Success delete transaction with id ${transactionId}`,
         data: [],
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  postNotifMidtrans: async (req, res) => {
+    try {
+      const notifMidtrans = await notif(req.body);
+      const { orderId, transactionStatus, fraudStatus } = notifMidtrans;
+      
+      if (transactionStatus === 'capture') {
+        if (fraudStatus === 'challenge') {
+          await Transaction.update(
+            {
+              transaction_status: 'challenge',
+            },
+            {
+              where: {
+                id: orderId,
+              },
+            }
+          );
+        } else if (fraudStatus === 'accept') {
+          await Transaction.update(
+            {
+              transaction_status: 'success',
+            },
+            {
+              where: {
+                id: orderId,
+              },
+            }
+          );
+        }
+      } else if (transactionStatus === 'settlement') {
+        await Transaction.update(
+            {
+              transaction_status: 'success',
+            },
+            {
+              where: {
+                id: orderId,
+              },
+            }
+          );
+      } else if (transactionStatus === 'deny') {
+        await Transaction.update(
+            {
+              transaction_status: 'failed',
+            },
+            {
+              where: {
+                id: orderId,
+              },
+            }
+          );
+      } else if (transactionStatus === 'cancel' || transactionStatus === 'expire') {
+        await Transaction.update(
+            {
+              transaction_status: 'failed',
+            },
+            {
+              where: {
+                id: orderId,
+              },
+            }
+          );
+      } else if (transactionStatus === 'pending') {
+        await Transaction.update(
+          {
+            transaction_status: 'pending',
+          },
+          {
+            where: {
+              id: orderId,
+            },
+          }
+        );
+      }
+
+      return success(res, {
+        code: 200,
+        message: 'Transaction Successfully',
+        data: notifMidtrans,
       });
     } catch (error) {
       return failed(res, {
