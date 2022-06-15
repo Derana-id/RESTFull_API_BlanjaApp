@@ -166,7 +166,7 @@ module.exports = {
         id: transactionId,
         amount: total,
       };
-      const midtransNotif = await createTransaction(transData);
+      const midtransNotif = await post(transData);
 
       return success(res, {
         code: 200,
@@ -636,7 +636,7 @@ module.exports = {
     try {
       const notifMidtrans = await notif(req.body);
       const { orderId, transactionStatus, fraudStatus } = notifMidtrans;
-      
+
       if (transactionStatus === 'capture') {
         if (fraudStatus === 'challenge') {
           await Transaction.update(

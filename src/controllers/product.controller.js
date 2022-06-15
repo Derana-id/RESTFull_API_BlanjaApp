@@ -9,6 +9,8 @@ const ProductColor = require('../models/product_color');
 const ProductImage = require('../models/product_image');
 const ProductSize = require('../models/product_size');
 const pagination = require('../utils/pagination');
+const uploadGoogleDrive = require('../utils/uploadGoogleDrive');
+const deleteGoogleDrive = require('../utils/deleteGoogleDrive');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -297,15 +299,21 @@ module.exports = {
         });
       }
 
-      const { product_image } = req.body;
-      if (product_image) {
-        product_image.map(async (item) => {
-          await ProductImage.create({
-            id: uuidv4(),
-            product_id: id,
-            photo: req.file ? req.file.filename : 'default.png',
+      // Add Product Image
+      if (req.files) {
+        if (req.files.photo) {
+          req.files.photo.map(async (item) => {
+            // upload new image to google drive
+            const photoGd = await uploadGoogleDrive(item);
+            await Product.create({
+              id: uuidv4(),
+              product_id: id,
+              photo: photoGd.id,
+            });
+            // remove photo after upload
+            deleteFile(item.path);
           });
-        });
+        }
       }
 
       // Add Product Size
@@ -409,6 +417,30 @@ module.exports = {
       }
 
       // Add Product Image
+      if (req.files) {
+        if (req.files.photo) {
+          await ProductImage.destroy({
+            where: {
+              product_id: id,
+            },
+          });
+          await deleteGoogleDrive(product[0].photo);
+          req.files.photo.map(async (item) => {
+            // upload new image to google drive
+            const photoGd = await uploadGoogleDrive(item);
+            product_image.map(async (item) => {
+              await ProductImage.create({
+                id: uuidv4(),
+                product_id: id,
+                photo: photoGd.id,
+              });
+
+              // remove photo after upload
+              deleteFile(item.path);
+            });
+          });
+        }
+      }
       const { product_image } = req.body;
       if (product_image) {
         await ProductImage.destroy({
