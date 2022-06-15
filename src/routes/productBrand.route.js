@@ -1,7 +1,6 @@
 const express = require('express');
 const {
   getAllBrand,
-  getPublicBrand,
   getBrandId,
   insertBrand,
   updateBrand,
@@ -23,7 +22,6 @@ const router = express.Router();
 
 router
   .get('/brand', jwtAuth, getAllBrand)
-  .get('/brand/public', jwtAuth, getPublicBrand)
   .get('/brand/:id', jwtAuth, getBrandId)
   .post(
     '/brand',

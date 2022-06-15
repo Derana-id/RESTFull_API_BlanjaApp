@@ -10,7 +10,6 @@ const {
   createCart,
   updateCart,
   deleteCart,
-  deleteCartUser,
 } = require('../controllers/cart.controller');
 
 const router = express.Router();
@@ -19,7 +18,6 @@ router
   .get('/cart/:id', jwtAuth, getCartById)
   .post('/cart', jwtAuth, isBuyer, cart, validation, createCart)
   .put('/cart/:id', jwtAuth, isBuyer, cart, validation, updateCart)
-  .put('/cart/delete/user', jwtAuth, isBuyer, deleteCartUser)
   .put('/cart/delete/:id', jwtAuth, isBuyer, deleteCart);
 
 module.exports = router;

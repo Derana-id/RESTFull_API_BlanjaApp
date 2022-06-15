@@ -57,6 +57,8 @@ module.exports = {
   },
   getAllCategory: async (req, res) => {
     try {
+      // const { level } = req.APP_DATA.tokenDecoded;
+      // console.log(level);
       const Op = Sequelize.Op;
       let { page, limit, search, sort, sortType } = req.query;
       page = Number(page) || 1;

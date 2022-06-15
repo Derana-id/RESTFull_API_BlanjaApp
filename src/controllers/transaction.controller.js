@@ -1,5 +1,5 @@
-const Trunsaction = require('../models/transaction');
-const TrunsactionDetail = require('../models/transaction_detail');
+const Transaction = require('../models/transaction');
+const TransactionDetail = require('../models/transaction_detail');
 const Product = require('../models/product.js');
 const ProductColor = require('../models/product_color');
 const ProductImage = require('../models/product_image');
@@ -15,7 +15,7 @@ const Op = Sequelize.Op;
 const RandomCodes = require('random-codes');
 
 module.exports = {
-  insertTrunsaction: async (req, res) => {
+  insertTransaction: async (req, res) => {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
       const productId = req.params.id;
@@ -128,7 +128,7 @@ module.exports = {
         };
       }
 
-      const result = await Trunsaction.create(data);
+      const result = await Transaction.create(data);
 
       const dataTransactionDetail = {
         id: uuidv4(),
@@ -138,7 +138,7 @@ module.exports = {
         qty: qty,
         is_active: 1,
       };
-      await TrunsactionDetail.create(dataTransactionDetail);
+      await TransactionDetail.create(dataTransactionDetail);
 
       const getStock = Number(checkStock[0].stock);
 
@@ -187,7 +187,7 @@ module.exports = {
         isPrimary,
       } = req.body;
 
-      const checkTransactionId = await Trunsaction.findAll({
+      const checkTransactionId = await Transaction.findAll({
         where: {
           id: transactionId,
         },
@@ -243,7 +243,7 @@ module.exports = {
         is_active: 1,
       };
       await Address.create(dataAddress);
-      const updateTransaction = await Trunsaction.update(dataTransaction, {
+      const updateTransaction = await Transaction.update(dataTransaction, {
         where: {
           id: transactionId,
         },
@@ -272,13 +272,13 @@ module.exports = {
         is_payment: 1,
       };
 
-      const result = await Trunsaction.update(data, {
+      const result = await Transaction.update(data, {
         where: {
           id: transactionId,
         },
       });
 
-      const checkTransactionDetail = await TrunsactionDetail.findAll({
+      const checkTransactionDetail = await TransactionDetail.findAll({
         where: {
           transaction_id: transactionId,
         },
@@ -320,6 +320,8 @@ module.exports = {
   },
   getAllTransaction: async (req, res) => {
     try {
+      const userId = req.APP_DATA.tokenDecoded.id;
+      const level = req.APP_DATA.tokenDecoded.level;
       let { page, limit, search, sort, sortType } = req.query;
       page = Number(page) || 1;
       limit = Number(limit) || 10;
@@ -344,24 +346,46 @@ module.exports = {
 
       const offset = (page - 1) * limit;
 
-      const result = await Trunsaction.findAndCountAll({
-        where: condition,
-        order: [[`${sort}`, `${sortType}`]],
-        limit,
-        offset,
-      });
-      if (!result.count) {
-        return failed(res, {
-          code: 404,
-          message: 'Transaction Not Found',
-          error: 'Not Found',
+      let result;
+
+      if (level == 2) {
+        result = await Transaction.findAndCountAll({
+          where: {
+            is_active: 1,
+            user_id: userId,
+            is_payment: 0,
+          },
+          order: [[`${sort}`, `${sortType}`]],
+          limit,
+          offset,
         });
+        if (!result.count) {
+          return failed(res, {
+            code: 404,
+            message: 'Transaction Not Found',
+            error: 'Not Found',
+          });
+        }
+      } else {
+        result = await Transaction.findAndCountAll({
+          where: condition,
+          order: [[`${sort}`, `${sortType}`]],
+          limit,
+          offset,
+        });
+        if (!result.count) {
+          return failed(res, {
+            code: 404,
+            message: 'Transaction Not Found',
+            error: 'Not Found',
+          });
+        }
       }
 
       let getData = [];
       const data = await Promise.all(
         result.rows.map(async (item) => {
-          const transactionDetail = await TrunsactionDetail.findAll({
+          const transactionDetail = await TransactionDetail.findAll({
             where: {
               transaction_id: item.id,
             },
@@ -427,116 +451,12 @@ module.exports = {
       });
     }
   },
-  getMyTransaction: async (req, res) => {
-    try {
-      const userId = req.APP_DATA.tokenDecoded.id;
-      let { page, limit, search, sort, sortType } = req.query;
-      page = Number(page) || 1;
-      limit = Number(limit) || 10;
-      sort = sort || 'recipient_name';
-      sortType = sortType || 'ASC';
-
-      const condition = search
-        ? {
-            recipient_name: { [Op.iLike]: `%${search}%` },
-          }
-        : null;
-
-      const offset = (page - 1) * limit;
-
-      const result = await Trunsaction.findAndCountAll({
-        where: {
-          is_active: 1,
-          user_id: userId,
-          is_payment: 0,
-        },
-        order: [[`${sort}`, `${sortType}`]],
-        limit,
-        offset,
-      });
-      if (!result.count) {
-        return failed(res, {
-          code: 404,
-          message: 'Transaction Not Found',
-          error: 'Not Found',
-        });
-      }
-
-      let getData = [];
-      const data = await Promise.all(
-        result.rows.map(async (item) => {
-          const transactionDetail = await TrunsactionDetail.findAll({
-            where: {
-              transaction_id: item.id,
-            },
-          });
-
-          const dataDetailTransaction = await Promise.all(
-            transactionDetail.map(async (element) => {
-              const product = await Product.findAll({
-                where: {
-                  id: element.product_id,
-                },
-              });
-
-              const dataProduct = await Promise.all(
-                product.map(async (e) => {
-                  const color = await ProductColor.findAll({
-                    where: {
-                      product_id: e.id,
-                    },
-                  });
-
-                  const image = await ProductImage.findAll({
-                    where: {
-                      product_id: e.id,
-                    },
-                  });
-
-                  const size = await ProductSize.findAll({
-                    where: {
-                      product_id: e.id,
-                    },
-                  });
-
-                  const obj = {
-                    transaction: item,
-                    transactionDetail: element,
-                    product: e,
-                    color,
-                    image,
-                    size,
-                  };
-
-                  return getData.push(obj);
-                })
-              );
-            })
-          );
-        })
-      );
-
-      const paging = pagination(result.count, page, limit);
-      return success(res, {
-        code: 200,
-        message: `Success get my transaction`,
-        data: getData,
-        pagination: paging.response,
-      });
-    } catch (error) {
-      return failed(res, {
-        code: 500,
-        message: error.message,
-        error: 'Internal Server Error',
-      });
-    }
-  },
   getTransactionId: async (req, res) => {
     try {
       const id = req.params.id;
-      const result = await Trunsaction.findByPk(id);
+      const result = await Transaction.findByPk(id);
 
-      const transactionDetail = await TrunsactionDetail.findAll({
+      const transactionDetail = await TransactionDetail.findAll({
         where: {
           transaction_id: id,
         },
@@ -596,7 +516,7 @@ module.exports = {
       const data = {
         is_active: 0,
       };
-      const result = await Trunsaction.update(data, {
+      const result = await Transaction.update(data, {
         where: {
           id: transactionId,
         },

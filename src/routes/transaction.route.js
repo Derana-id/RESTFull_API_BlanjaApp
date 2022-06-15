@@ -1,10 +1,9 @@
 const express = require('express');
 const {
-  insertTrunsaction,
+  insertTransaction,
   updateTransaction,
   updatePayment,
   getAllTransaction,
-  getMyTransaction,
   getTransactionId,
   deleteTransaction,
 } = require('../controllers/transaction.controller');
@@ -27,7 +26,7 @@ router
     isBuyer,
     insertValidation,
     validation,
-    insertTrunsaction
+    insertTransaction
   )
   .put(
     '/transaction/address/:id',
@@ -45,8 +44,7 @@ router
     validation,
     updatePayment
   )
-  .get('/transaction', jwtAuth, isAdmin, getAllTransaction)
-  .get('/mytransaction', jwtAuth, isBuyer, getMyTransaction)
+  .get('/transaction', jwtAuth, getAllTransaction)
   .get('/transaction/:id', jwtAuth, getTransactionId)
   .put('/transaction/delete/:id', jwtAuth, isBuyer, deleteTransaction);
 

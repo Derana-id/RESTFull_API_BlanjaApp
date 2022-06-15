@@ -156,12 +156,14 @@ module.exports = {
       success(res, {
         code: 200,
         message: `Success get product by user`,
-        data: {
-          product,
-          color,
-          image,
-          size,
-        },
+        data: [
+          {
+            product,
+            color,
+            image,
+            size,
+          },
+        ],
       });
     } catch (error) {
       return failed(res, {
