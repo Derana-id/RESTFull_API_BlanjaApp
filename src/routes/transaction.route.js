@@ -7,6 +7,7 @@ const {
   getMyTransaction,
   getTransactionId,
   deleteTransaction,
+  postNotifMidtrans,
 } = require('../controllers/transaction.controller');
 const jwtAuth = require('../middlewares/jwtAuth');
 const { isBuyer, isAdmin } = require('../middlewares/authorization');
@@ -21,6 +22,7 @@ const validation = require('../middlewares/validation');
 const router = express.Router();
 
 router
+  .post('/transaction/midtrans-notification', postNotifMidtrans)
   .post(
     '/transaction/:id',
     jwtAuth,
