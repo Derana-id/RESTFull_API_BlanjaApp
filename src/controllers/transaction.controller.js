@@ -636,7 +636,7 @@ module.exports = {
     try {
       const notifMidtrans = await notif(req.body);
       const { orderId, transactionStatus, fraudStatus } = notifMidtrans;
-      
+
       if (transactionStatus === 'capture') {
         if (fraudStatus === 'challenge') {
           await Transaction.update(
