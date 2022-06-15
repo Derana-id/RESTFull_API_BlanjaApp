@@ -4,7 +4,7 @@ const jwtAuth = require('../middlewares/jwtAuth');
 const { isBuyer } = require('../middlewares/authorization');
 const { update } = require('../validations/profile.validation');
 const validation = require('../middlewares/validation');
-const upload = require('../middlewares/uploadUser');
+const upload = require('../middlewares/uploads');
 const {
   getUserById,
   updateProfile,

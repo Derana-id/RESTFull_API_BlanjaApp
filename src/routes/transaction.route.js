@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-  insertTrunsaction,
+  insertTransaction,
   updateTransaction,
   updatePayment,
   getAllTransaction,
@@ -27,7 +27,7 @@ router
     isBuyer,
     insertValidation,
     validation,
-    insertTrunsaction
+    insertTransaction
   )
   .put(
     '/transaction/address/:id',
