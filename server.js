@@ -52,6 +52,7 @@ app.use(require('./src/routes/product.route'));
 app.use(require('./src/routes/transaction.route'));
 app.use(require('./src/routes/cart.route'));
 app.use(require('./src/routes/transactionDetail'));
+app.use(require('./src/routes/chat.route'));
 
 // 404 router
 app.use((req, res) => {
