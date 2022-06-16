@@ -1,19 +1,24 @@
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 const Chat = require('../models/chat');
-const Store = require('../models/store');
+const Profile = require('../models/profile');
 
 module.exports = {
   initialtChat: async (req, res) => {
     try {
       const { sender, receiver } = req.body;
 
-      // sender and receiver using id tbl users
+      const user = await Profile.findAll({
+        where: {
+          user_id: receiver,
+        },
+      });
+      
       await Chat.create({
         id: uuidv4(),
         sender,
         receiver,
-        message: '',
+        message: `Halo ${user[0].name}, ada yang bisa dibantu ?`,
       });
 
       return success(res, {
