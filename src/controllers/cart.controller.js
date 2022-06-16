@@ -136,7 +136,33 @@ module.exports = {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
 
-      const { product_id, qty } = req.body;
+      let { product_id, qty } = req.body;
+
+      const checkCart = await Cart.findAll({
+        where: {
+          product_id: product_id,
+          user_id: userId,
+        },
+      });
+
+      if (checkCart.length) {
+        const getQty = Number(checkCart[0].qty) + Number(qty);
+        const data = {
+          qty: getQty,
+        };
+
+        await Cart.update(data, {
+          where: {
+            id: checkCart[0].id,
+          },
+        });
+
+        return success(res, {
+          code: 200,
+          message: 'Success Create Cart',
+          data: null,
+        });
+      }
 
       const cart = {
         id: uuidv4(),
@@ -167,7 +193,7 @@ module.exports = {
 
       const cart = await Cart.findByPk(id);
 
-      if (!cart.length) {
+      if (!cart) {
         return failed(res, {
           code: 404,
           message: `Cart by id ${id} not found`,
