@@ -12,6 +12,8 @@ const pagination = require('../utils/pagination');
 const uploadGoogleDrive = require('../utils/uploadGoogleDrive');
 const deleteGoogleDrive = require('../utils/deleteGoogleDrive');
 const Op = Sequelize.Op;
+const db = require('../config/pg');
+const { QueryTypes } = require('sequelize');
 
 module.exports = {
   getAllProduct: async (req, res) => {
@@ -137,35 +139,63 @@ module.exports = {
         });
       }
 
-      const color = await ProductColor.findAll({
-        where: {
-          product_id: product[0].id,
-        },
-      });
+      let getData = [];
+      const data = await Promise.all(
+        product.map(async (item) => {
+          const color = await ProductColor.findAll({
+            where: {
+              product_id: item.id,
+            },
+          });
 
-      const image = await ProductImage.findAll({
-        where: {
-          product_id: product[0].id,
-        },
-      });
+          const image = await ProductImage.findAll({
+            where: {
+              product_id: item.id,
+            },
+          });
 
-      const size = await ProductSize.findAll({
-        where: {
-          product_id: product[0].id,
-        },
-      });
+          const size = await ProductSize.findAll({
+            where: {
+              product_id: item.id,
+            },
+          });
+
+          const store = await Store.findAll({
+            where: {
+              id: item.store_id,
+            },
+          });
+
+          const brand = await Brand.findAll({
+            where: {
+              id: item.brand_id,
+            },
+          });
+
+          const category = await Category.findAll({
+            where: {
+              id: item.category_id,
+            },
+          });
+
+          const obj = {
+            store,
+            product: item,
+            brand,
+            category,
+            color,
+            image,
+            size,
+          };
+
+          return getData.push(obj);
+        })
+      );
 
       success(res, {
         code: 200,
         message: `Success get product by user`,
-        data: [
-          {
-            product,
-            color,
-            image,
-            size,
-          },
-        ],
+        data: getData,
       });
     } catch (error) {
       return failed(res, {
@@ -321,7 +351,7 @@ module.exports = {
       // Add Product Size
       const { size } = req.body;
       let getSize;
-      if (size <= 50 && size >= 41) {
+      if (size >= 41) {
         getSize = 'XL';
       } else if (size <= 40 && size >= 31) {
         getSize = 'L';
@@ -329,10 +359,8 @@ module.exports = {
         getSize = 'M';
       } else if (size <= 25 && size >= 21) {
         getSize = 'S';
-      } else if (size <= 20 && size >= 16) {
-        getSize = 'XS';
       } else {
-        getSize = 'M';
+        getSize = 'XS';
       }
 
       const { product_size } = req.body;
@@ -516,6 +544,58 @@ module.exports = {
         code: 200,
         message: 'Success Delete Product',
         data: null,
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  filter: async (req, res) => {
+    try {
+      const { color, size, category, brand } = req.body;
+      const getColor = color.map((e) => "'" + e + "'").toString();
+      const getSize = size.map((e) => "'" + e + "'").toString();
+      const getCategory = category.map((e) => "'" + e + "'").toString();
+      const getBrand = brand.map((e) => "'" + e + "'").toString();
+
+      console.log(getColor);
+      console.log(getSize);
+      console.log(getCategory);
+      console.log(getBrand);
+
+      const filter = await db.query(
+        `
+        SELECT product.id, product.product_name, product.price,
+        (
+        SELECT product_image.photo FROM product_image
+          WHERE product_image.product_id = product.id
+          LIMIT 1
+        ) AS photo
+        FROM product
+        INNER JOIN category ON product.category_id = category.id
+        INNER JOIN product_brand ON product.brand_id = product_brand.id
+        INNER JOIN product_color ON product.id = product_color.product_id
+        INNER JOIN product_image ON product.id = product_image.product_id
+        INNER JOIN product_size ON product.id = product_size.product_id
+        WHERE
+        product_color.color_name IN (${getColor})
+        OR product_size.size IN (${getSize})
+        OR product_brand.brand_name IN (${getCategory})
+        OR category.category_name IN (${getBrand})
+        GROUP BY product.id, product.product_name, product.price
+        `,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
+
+      return success(res, {
+        code: 200,
+        message: 'Success get product',
+        data: filter,
       });
     } catch (error) {
       return failed(res, {
