@@ -1,7 +1,7 @@
 <div id="top"></div>
 <p align="center">
 <div align="center">
-  <img height="150" src="./public/Logo.png"/>
+  <img src="https://lh3.googleusercontent.com/d/13oL_tdqAFzcRVAPIk0lWpAuGZQ1Dmj4d" width="500px" alt="Logo">
 </div>
   <h3 align="center">Blanja : Backend E-Commerce</h3>
   <p align="center">
