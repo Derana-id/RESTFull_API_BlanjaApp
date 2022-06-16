@@ -80,7 +80,6 @@ module.exports = {
           user_id: userId,
         },
       });
-      // console.log(address[0].dataValues);
 
       const config = {
         chars: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',

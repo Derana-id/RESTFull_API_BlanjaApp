@@ -1,25 +1,31 @@
-const Store = require('../models/store');
-const Profile = require('../models/profile');
+const { v4: uuidv4 } = require('uuid');
+const { success, failed } = require('../helpers/response');
 const Chat = require('../models/chat');
+const Profile = require('../models/profile');
 
 module.exports = {
-  insertChat: async (req, res) => {
+  initialtChat: async (req, res) => {
     try {
-      const { senderId, receiverId } = req.body;
+      const { sender, receiver } = req.body;
 
-      const store = await Store.findAll({
+      const user = await Profile.findAll({
         where: {
-          id: senderId,
+          user_id: receiver,
         },
       });
-
       
+      await Chat.create({
+        id: uuidv4(),
+        sender,
+        receiver,
+        message: `Halo ${user[0].name}, ada yang bisa dibantu ?`,
+      });
 
-      // const user = await Store.findAll({
-      //   where: {
-      //     id: receiverId,
-      //   },
-      // });
+      return success(res, {
+        code: 200,
+        message: 'Success send chat',
+        data: null,
+      });
     } catch (error) {
       return failed(res, {
         code: 500,
