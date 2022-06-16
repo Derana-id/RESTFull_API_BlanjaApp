@@ -127,7 +127,7 @@ GMAIL_REFRESH_TOKEN = [GMAIL_REFRESH_TOKEN]
 
 You can view my Postman collection [here](https://warped-shadow-374852.postman.co/workspace/Blanja~42365103-c73a-4fee-8969-1d8bf2d83832/overview)
 </br>
-[![Run in Postman](https://app.getpostman.com/run-collection/19659051-7f818db8-a545-43c6-ba16-2fdd859ce43b?action=collection%2Ffork&collection-url=entityId%3D19659051-7f818db8-a545-43c6-ba16-2fdd859ce43b%26entityType%3Dcollection%26workspaceId%3D2d0c24df-fbb7-405f-93af-c4ef984f8428#?env%5BDevelopment%5D=W3sia2V5IjoiZGV2IiwidmFsdWUiOiJodHRwOi8vbG9jYWxob3N0OjQwMDAvIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQifV0=)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/3b5e01421434a5ef05ae?action=collection%2Fimport)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
