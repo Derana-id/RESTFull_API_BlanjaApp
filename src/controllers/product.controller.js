@@ -365,7 +365,7 @@ module.exports = {
 
       const product = await Product.findByPk(id);
 
-      if (!product.length) {
+      if (!product) {
         return failed(res, {
           code: 404,
           message: `Product by id ${id} not found`,
@@ -493,7 +493,7 @@ module.exports = {
 
       const product = await Product.findByPk(id);
 
-      if (!product.length) {
+      if (!product) {
         return failed(res, {
           code: 404,
           message: `Product by id ${id} not found`,

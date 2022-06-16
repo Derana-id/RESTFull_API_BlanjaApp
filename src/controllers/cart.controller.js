@@ -167,7 +167,7 @@ module.exports = {
 
       const cart = await Cart.findByPk(id);
 
-      if (!cart.length) {
+      if (!cart) {
         return failed(res, {
           code: 404,
           message: `Cart by id ${id} not found`,
