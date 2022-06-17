@@ -138,6 +138,20 @@ module.exports = {
 
       let { product_id, qty } = req.body;
 
+      const checkProductId = await Product.findAll({
+        where: {
+          id: product_id,
+        },
+      });
+
+      if (!checkProductId.length) {
+        return failed(res, {
+          code: 404,
+          message: `Product by id ${product_id} not found`,
+          error: 'Not Found',
+        });
+      }
+
       const checkCart = await Cart.findAll({
         where: {
           product_id: product_id,
