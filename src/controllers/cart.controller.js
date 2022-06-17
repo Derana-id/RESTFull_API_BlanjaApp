@@ -248,16 +248,11 @@ module.exports = {
           });
         }
 
-        await Cart.update(
-          {
-            is_active: 0,
+        await Cart.destroy({
+          where: {
+            user_id: id,
           },
-          {
-            where: {
-              user_id: id,
-            },
-          }
-        );
+        });
 
         return success(res, {
           code: 200,
@@ -279,16 +274,11 @@ module.exports = {
           });
         }
 
-        await Cart.update(
-          {
-            is_active: 0,
+        await Cart.destroy({
+          where: {
+            id,
           },
-          {
-            where: {
-              id,
-            },
-          }
-        );
+        });
 
         return success(res, {
           code: 200,
