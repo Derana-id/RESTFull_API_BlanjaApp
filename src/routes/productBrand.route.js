@@ -1,7 +1,6 @@
 const express = require('express');
 const {
   getAllBrand,
-  getPublicBrand,
   getBrandId,
   insertBrand,
   updateBrand,
@@ -17,13 +16,12 @@ const validation = require('../middlewares/validation');
 
 const jwtAuth = require('../middlewares/jwtAuth');
 const { isAdmin } = require('../middlewares/authorization');
-const brandUpload = require('../middlewares/uploadProductBrand');
+const brandUpload = require('../middlewares/uploads');
 
 const router = express.Router();
 
 router
   .get('/brand', jwtAuth, getAllBrand)
-  .get('/brand/public', jwtAuth, getPublicBrand)
   .get('/brand/:id', jwtAuth, getBrandId)
   .post(
     '/brand',

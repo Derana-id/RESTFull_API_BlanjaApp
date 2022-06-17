@@ -159,12 +159,14 @@ module.exports = {
       success(res, {
         code: 200,
         message: `Success get product by user`,
-        data: {
-          product,
-          color,
-          image,
-          size,
-        },
+        data: [
+          {
+            product,
+            color,
+            image,
+            size,
+          },
+        ],
       });
     } catch (error) {
       return failed(res, {
@@ -367,7 +369,7 @@ module.exports = {
 
       const product = await Product.findByPk(id);
 
-      if (!product.length) {
+      if (!product) {
         return failed(res, {
           code: 404,
           message: `Product by id ${id} not found`,
@@ -383,7 +385,6 @@ module.exports = {
         is_new,
         description,
         stock,
-        rating,
       } = req.body;
 
       const data = {
@@ -394,7 +395,6 @@ module.exports = {
         is_new,
         description,
         stock,
-        rating,
       };
 
       await Product.update(data, {
@@ -497,7 +497,7 @@ module.exports = {
 
       const product = await Product.findByPk(id);
 
-      if (!product.length) {
+      if (!product) {
         return failed(res, {
           code: 404,
           message: `Product by id ${id} not found`,
