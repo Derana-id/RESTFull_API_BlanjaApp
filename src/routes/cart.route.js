@@ -18,6 +18,6 @@ router
   .get('/cart/:id', jwtAuth, getCartById)
   .post('/cart', jwtAuth, isBuyer, cart, validation, createCart)
   .put('/cart/:id', jwtAuth, isBuyer, cart, validation, updateCart)
-  .put('/cart/delete/:id', jwtAuth, isBuyer, deleteCart);
+  .delete('/cart/delete/:id', jwtAuth, isBuyer, deleteCart);
 
 module.exports = router;

@@ -567,10 +567,39 @@ module.exports = {
       const getCategory = category.map((e) => "'" + e + "'").toString();
       const getBrand = brand.map((e) => "'" + e + "'").toString();
 
-      console.log(getColor);
-      console.log(getSize);
-      console.log(getCategory);
-      console.log(getBrand);
+      let { page, limit } = req.query;
+
+      page = Number(page) || 1;
+      limit = Number(limit) || 15;
+
+      const offset = (page - 1) * limit;
+
+      const filterPage = await db.query(
+        `
+        SELECT product.id, product.product_name, product.price,
+        (
+        SELECT product_image.photo FROM product_image
+          WHERE product_image.product_id = product.id
+          LIMIT 1
+        ) AS photo
+        FROM product
+        INNER JOIN category ON product.category_id = category.id
+        INNER JOIN product_brand ON product.brand_id = product_brand.id
+        INNER JOIN product_color ON product.id = product_color.product_id
+        INNER JOIN product_image ON product.id = product_image.product_id
+        INNER JOIN product_size ON product.id = product_size.product_id
+        WHERE
+        product_color.color_name IN (${getColor})
+        OR product_size.size IN (${getSize})
+        OR product_brand.brand_name IN (${getCategory})
+        OR category.category_name IN (${getBrand})
+        AND (product.is_active = 1)
+        GROUP BY product.id, product.product_name, product.price
+        `,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
 
       const filter = await db.query(
         `
@@ -591,17 +620,22 @@ module.exports = {
         OR product_size.size IN (${getSize})
         OR product_brand.brand_name IN (${getCategory})
         OR category.category_name IN (${getBrand})
+        AND (product.is_active = 1)
         GROUP BY product.id, product.product_name, product.price
+        LIMIT ${limit}
+        OFFSET ${offset}
         `,
         {
           type: QueryTypes.SELECT,
         }
       );
 
+      const paging = pagination(filterPage.length, page, limit);
       return success(res, {
         code: 200,
-        message: 'Success get product',
+        message: `Success get all product`,
         data: filter,
+        pagination: paging.response,
       });
     } catch (error) {
       return failed(res, {
