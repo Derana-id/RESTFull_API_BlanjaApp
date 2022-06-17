@@ -12,11 +12,13 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
+  filter,
 } = require('../controllers/product.controller');
 
 const router = express.Router();
 router
   .get('/product', getAllProduct)
+  .get('/product/filter', filter)
   .get('/product/user', jwtAuth, isSeller, getProductByUser)
   .get('/product/:id', getProductById)
   .post(
