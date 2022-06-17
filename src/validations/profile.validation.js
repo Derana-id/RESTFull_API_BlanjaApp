@@ -1,6 +1,6 @@
 const { check } = require('express-validator');
 
-const update = [
+const updateProfileValidasi = [
   // name
   check('name', 'Name required').not().isEmpty(),
   check('name', 'Name only can contains alphabet').isAlpha('en-US', {
@@ -27,5 +27,5 @@ const update = [
 ];
 
 module.exports = {
-  update,
+  updateProfileValidasi,
 };

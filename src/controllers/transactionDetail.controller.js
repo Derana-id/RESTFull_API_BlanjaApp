@@ -8,18 +8,27 @@ module.exports = {
       const data = {
         is_active: 0,
       };
-      const result = await TransactionDetail.update(data, {
+
+      const check = await TransactionDetail.findAll({
         where: {
           transaction_id: transactionId,
         },
       });
-      if (!result.length) {
+
+      if (!check.length) {
         return failed(res, {
           code: 409,
           message: `Transaction id ${transactionId} not found`,
           error: 'Delete Failed',
         });
       }
+
+      const result = await TransactionDetail.update(data, {
+        where: {
+          transaction_id: transactionId,
+        },
+      });
+
       return success(res, {
         code: 200,
         message: `Success delete detail transaction with transaction id ${transactionId}`,
@@ -39,18 +48,27 @@ module.exports = {
       const data = {
         is_active: 0,
       };
-      const result = await TransactionDetail.update(data, {
+
+      const check = await TransactionDetail.findAll({
         where: {
           id: id,
         },
       });
-      if (!result.length) {
+
+      if (!check.length) {
         return failed(res, {
           code: 409,
           message: `Detail Transaction id ${id} not found`,
           error: 'Delete Failed',
         });
       }
+
+      const result = await TransactionDetail.update(data, {
+        where: {
+          id: id,
+        },
+      });
+
       return success(res, {
         code: 200,
         message: `Success delete detail transaction with id ${id}`,

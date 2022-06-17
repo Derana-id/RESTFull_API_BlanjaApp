@@ -38,17 +38,26 @@ module.exports = {
 
         // set qty
         qty = cartCheck[0].qty;
-      } else {
-        const cart = {
-          id: uuidv4(),
-          user_id: userId,
-          product_id: productId,
-          qty,
-          is_active: 1,
-        };
 
-        await Cart.create(cart);
+        // delete cart id
+        await Cart.destroy({
+          where: {
+            id: cartCheck[0].id,
+          },
+        });
       }
+      // else {
+      //   // dihapus
+      //   const cart = {
+      //     id: uuidv4(),
+      //     user_id: userId,
+      //     product_id: productId,
+      //     qty,
+      //     is_active: 1,
+      //   };
+
+      //   await Cart.create(cart);
+      // }
       price = Number(price);
       qty = Number(qty);
 
@@ -271,7 +280,7 @@ module.exports = {
   },
   updatePayment: async (req, res) => {
     try {
-      const userId = req.APP_DATA.tokenDecoded.id;
+      // const userId = req.APP_DATA.tokenDecoded.id;
       const transactionId = req.params.id;
       const { paymentMethod } = req.body;
 
@@ -286,33 +295,6 @@ module.exports = {
         },
       });
 
-      const checkTransactionDetail = await TransactionDetail.findAll({
-        where: {
-          transaction_id: transactionId,
-        },
-      });
-
-      const checkProduct = await Product.findAll({
-        where: {
-          id: checkTransactionDetail[0].product_id,
-        },
-      });
-
-      const checkCart = await Cart.findAll({
-        where: {
-          product_id: checkProduct[0].id,
-          user_id: userId,
-        },
-      });
-
-      const dataCart = {
-        is_active: 0,
-      };
-      await Cart.update(dataCart, {
-        where: {
-          id: checkCart[0].id,
-        },
-      });
       return success(res, {
         code: 200,
         message: `Success update transaction payment`,

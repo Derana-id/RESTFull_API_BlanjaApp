@@ -139,6 +139,20 @@ module.exports = {
         isPrimary,
       } = req.body;
 
+      const checkIdAddress = await Address.findAll({
+        where: {
+          id,
+        },
+      });
+
+      if (!checkIdAddress.length) {
+        return failed(res, {
+          code: 409,
+          message: 'Id not found',
+          error: 'Update Failed',
+        });
+      }
+
       const checkAddress = await Address.findAll({
         where: {
           user_id: userId,
@@ -186,13 +200,7 @@ module.exports = {
           id: id,
         },
       });
-      if (!result.length) {
-        return failed(res, {
-          code: 409,
-          message: 'Id not found',
-          error: 'Update Failed',
-        });
-      }
+
       return success(res, {
         code: 200,
         message: `Success update address`,

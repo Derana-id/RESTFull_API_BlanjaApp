@@ -31,10 +31,15 @@ module.exports = {
             product_name: { [Op.iLike]: `%${search}%` },
           }
         : null;
+
+      const active = condition
+        ? { is_active: 1, ...condition }
+        : { is_active: 1 };
+
       const offset = (page - 1) * limit;
 
       const product = await Product.findAndCountAll({
-        where: condition,
+        where: active,
         order: [[`${sort}`, `${sortType}`]],
         limit,
         offset,
@@ -129,6 +134,7 @@ module.exports = {
       const product = await Product.findAll({
         where: {
           store_id: store[0].id,
+          is_active: 1,
         },
       });
 
@@ -213,6 +219,7 @@ module.exports = {
       const product = await Product.findAll({
         where: {
           id,
+          is_active: 1,
         },
       });
 
@@ -379,7 +386,7 @@ module.exports = {
           });
         }
       }
-      
+
       return success(res, {
         code: 200,
         message: 'Success Create Product',
@@ -397,9 +404,14 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const product = await Product.findByPk(id);
+      const product = await Product.findAll({
+        where: {
+          id,
+          is_active: 1,
+        },
+      });
 
-      if (!product) {
+      if (!product.length) {
         return failed(res, {
           code: 404,
           message: `Product by id ${id} not found`,
