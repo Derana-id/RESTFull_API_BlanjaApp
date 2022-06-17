@@ -11,6 +11,7 @@ const ProductSize = require('../models/product_size');
 const pagination = require('../utils/pagination');
 const uploadGoogleDrive = require('../utils/uploadGoogleDrive');
 const deleteGoogleDrive = require('../utils/deleteGoogleDrive');
+const deleteFile = require('../utils/deleteFile');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -335,10 +336,8 @@ module.exports = {
         if (req.files.photo) {
           req.files.photo.map(async (item) => {
             // upload new image to google drive
-            console.log(item);
             const photoGd = await uploadGoogleDrive(item);
-
-            await Product.create({
+            await ProductImage.create({
               id: uuidv4(),
               product_id: id,
               photo: photoGd.id,
