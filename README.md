@@ -15,8 +15,6 @@
   </p>
 </p>
 
-
-
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
@@ -118,7 +116,12 @@ GOOGLE_CLIENT_ID = [GOOGLE_CLIENT_ID]
 GOOGLE_CLIENT_SECRET = [GOOGLE_CLIENT_SECRET]
 REDIRECT_URI = [REDIRECT_URI]
 GMAIL_REFRESH_TOKEN = [GMAIL_REFRESH_TOKEN]
+DRIVE_REFRESH_TOKEN=
 
+# midtrans
+MT_PRODUCTION=
+MT_CLIENT_KEY=
+MT_SERVER_KEY=
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
