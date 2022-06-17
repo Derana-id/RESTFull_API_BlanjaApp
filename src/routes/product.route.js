@@ -4,7 +4,7 @@ const jwtAuth = require('../middlewares/jwtAuth');
 const { isSeller } = require('../middlewares/authorization');
 const { product } = require('../validations/product.validation');
 const validation = require('../middlewares/validation');
-const upload = require('../middlewares/uploadProduct');
+const multipleUpload = require('../middlewares/multipleUpload');
 const {
   getAllProduct,
   getProductByUser,
@@ -23,7 +23,7 @@ router
     '/product',
     jwtAuth,
     isSeller,
-    upload,
+    multipleUpload,
     product,
     validation,
     createProduct
@@ -32,7 +32,7 @@ router
     '/product/:id',
     jwtAuth,
     isSeller,
-    upload,
+    multipleUpload,
     product,
     validation,
     updateProduct

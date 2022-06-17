@@ -289,6 +289,7 @@ module.exports = {
 
       // Add Product Color
       const { product_color } = req.body;
+      // const dataColor = JSON.parse(product_color);
       if (product_color) {
         product_color.map(async (item) => {
           await ProductColor.create({
@@ -299,12 +300,44 @@ module.exports = {
         });
       }
 
+      // Add Product Size
+      // const { size } = req.body;
+      // let getSize;
+      // if (size <= 50 && size >= 41) {
+      //   getSize = 'XL';
+      // } else if (size <= 40 && size >= 31) {
+      //   getSize = 'L';
+      // } else if (size <= 30 && size >= 26) {
+      //   getSize = 'M';
+      // } else if (size <= 25 && size >= 21) {
+      //   getSize = 'S';
+      // } else if (size <= 20 && size >= 16) {
+      //   getSize = 'XS';
+      // } else {
+      //   getSize = 'M';
+      // }
+
+      const { product_size } = req.body;
+      // const dataSize = JSON.parse(product_size);
+      if (product_size) {
+        product_size.map(async (item) => {
+          // console.log(item.size);
+          await ProductSize.create({
+            id: uuidv4(),
+            product_id: id,
+            size: item.size,
+          });
+        });
+      }
+
       // Add Product Image
       if (req.files) {
         if (req.files.photo) {
           req.files.photo.map(async (item) => {
             // upload new image to google drive
+            console.log(item);
             const photoGd = await uploadGoogleDrive(item);
+
             await Product.create({
               id: uuidv4(),
               product_id: id,
@@ -314,34 +347,6 @@ module.exports = {
             deleteFile(item.path);
           });
         }
-      }
-
-      // Add Product Size
-      const { size } = req.body;
-      let getSize;
-      if (size <= 50 && size >= 41) {
-        getSize = 'XL';
-      } else if (size <= 40 && size >= 31) {
-        getSize = 'L';
-      } else if (size <= 30 && size >= 26) {
-        getSize = 'M';
-      } else if (size <= 25 && size >= 21) {
-        getSize = 'S';
-      } else if (size <= 20 && size >= 16) {
-        getSize = 'XS';
-      } else {
-        getSize = 'M';
-      }
-
-      const { product_size } = req.body;
-      if (product_size) {
-        product_size.map(async (item) => {
-          await ProductSize.create({
-            id: uuidv4(),
-            product_id: id,
-            size: getSize,
-          });
-        });
       }
 
       return success(res, {
