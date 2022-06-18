@@ -1,19 +1,15 @@
 const { check } = require('express-validator');
 
 const insertValidation = [
-  // price
-  check('price', 'price cannot be empty').not().isEmpty(),
-  check('price', 'please enter price correctly').isNumeric(),
-  check('price', 'price value must number').isInt({
-    min: 1,
-  }),
-
   // qty
   check('qty', 'qty cannot be empty').not().isEmpty(),
   check('qty', 'please enter qty correctly').isNumeric(),
   check('qty', 'qty value must number').isInt({
     min: 1,
   }),
+
+  // productId
+  check('productId', 'productId cannot be empty').not().isEmpty(),
 ];
 
 const updateValidation = [

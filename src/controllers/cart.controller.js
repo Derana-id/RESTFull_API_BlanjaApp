@@ -118,7 +118,7 @@ module.exports = {
 
       success(res, {
         code: 200,
-        message: `Success get user by id`,
+        message: `Success get cart by id`,
         data: {
           cart: cart[0],
           product,
@@ -137,6 +137,20 @@ module.exports = {
       const userId = req.APP_DATA.tokenDecoded.id;
 
       let { product_id, qty } = req.body;
+
+      const checkProductId = await Product.findAll({
+        where: {
+          id: product_id,
+        },
+      });
+
+      if (!checkProductId.length) {
+        return failed(res, {
+          code: 404,
+          message: `Product by id ${product_id} not found`,
+          error: 'Not Found',
+        });
+      }
 
       const checkCart = await Cart.findAll({
         where: {
@@ -248,16 +262,11 @@ module.exports = {
           });
         }
 
-        await Cart.update(
-          {
-            is_active: 0,
+        await Cart.destroy({
+          where: {
+            user_id: id,
           },
-          {
-            where: {
-              user_id: id,
-            },
-          }
-        );
+        });
 
         return success(res, {
           code: 200,
@@ -279,16 +288,11 @@ module.exports = {
           });
         }
 
-        await Cart.update(
-          {
-            is_active: 0,
+        await Cart.destroy({
+          where: {
+            id,
           },
-          {
-            where: {
-              id,
-            },
-          }
-        );
+        });
 
         return success(res, {
           code: 200,

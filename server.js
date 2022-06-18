@@ -46,13 +46,13 @@ app.use(require('./src/routes/auth.route'));
 app.use(require('./src/routes/address.route'));
 app.use(require('./src/routes/category.route'));
 app.use(require('./src/routes/productBrand.route'));
-app.use(require('./src/routes/profile.route'));
-app.use(require('./src/routes/store.route'));
 app.use(require('./src/routes/product.route'));
 app.use(require('./src/routes/transaction.route'));
 app.use(require('./src/routes/cart.route'));
 app.use(require('./src/routes/transactionDetail'));
 app.use(require('./src/routes/chat.route'));
+app.use(require('./src/routes/productImage.route'));
+app.use(require('./src/routes/user.route'));
 
 // 404 router
 app.use((req, res) => {

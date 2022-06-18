@@ -188,7 +188,7 @@ module.exports = {
           deleteFile(req.file.path);
         }
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Update Failed',
         });
@@ -243,7 +243,7 @@ module.exports = {
 
       if (!checkIsactive.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Delete category Failed',
         });

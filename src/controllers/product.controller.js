@@ -31,10 +31,15 @@ module.exports = {
             product_name: { [Op.iLike]: `%${search}%` },
           }
         : null;
+
+      const active = condition
+        ? { is_active: 1, ...condition }
+        : { is_active: 1 };
+
       const offset = (page - 1) * limit;
 
       const product = await Product.findAndCountAll({
-        where: condition,
+        where: active,
         order: [[`${sort}`, `${sortType}`]],
         limit,
         offset,
@@ -129,6 +134,7 @@ module.exports = {
       const product = await Product.findAll({
         where: {
           store_id: store[0].id,
+          is_active: 1,
         },
       });
 
@@ -213,6 +219,7 @@ module.exports = {
       const product = await Product.findAll({
         where: {
           id,
+          is_active: 1,
         },
       });
 
@@ -324,7 +331,7 @@ module.exports = {
       const { product_color } = req.body;
       // const dataColor = JSON.parse(product_color);
       if (product_color) {
-        product_color.map(async (item) => {
+        JSON.parse(product_color).map(async (item) => {
           await ProductColor.create({
             id: uuidv4(),
             product_id: id,
@@ -334,7 +341,7 @@ module.exports = {
       }
 
       // Add Product Size
-      // const { size } = req.body;
+      const { size } = req.body;
       // let getSize;
       // if (size <= 50 && size >= 41) {
       //   getSize = 'XL';
@@ -350,10 +357,12 @@ module.exports = {
       //   getSize = 'M';
       // }
 
+      console.log(size);
+
       const { product_size } = req.body;
       // const dataSize = JSON.parse(product_size);
       if (product_size) {
-        product_size.map(async (item) => {
+        JSON.parse(product_size).map(async (item) => {
           // console.log(item.size);
           await ProductSize.create({
             id: uuidv4(),
@@ -379,7 +388,7 @@ module.exports = {
           });
         }
       }
-      
+
       return success(res, {
         code: 200,
         message: 'Success Create Product',
@@ -397,7 +406,12 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const product = await Product.findByPk(id);
+      const product = await Product.findAll({
+        where: {
+          id,
+          is_active: 1,
+        },
+      });
 
       if (!product) {
         return failed(res, {
@@ -441,49 +455,8 @@ module.exports = {
             product_id: id,
           },
         });
-        product_color.map(async (item) => {
+        JSON.parse(product_color).map(async (item) => {
           await ProductColor.create({
-            id: uuidv4(),
-            product_id: id,
-            ...item,
-          });
-        });
-      }
-
-      // Add Product Image
-      if (req.files) {
-        if (req.files.photo) {
-          await ProductImage.destroy({
-            where: {
-              product_id: id,
-            },
-          });
-          await deleteGoogleDrive(product[0].photo);
-          req.files.photo.map(async (item) => {
-            // upload new image to google drive
-            const photoGd = await uploadGoogleDrive(item);
-            product_image.map(async (item) => {
-              await ProductImage.create({
-                id: uuidv4(),
-                product_id: id,
-                photo: photoGd.id,
-              });
-
-              // remove photo after upload
-              deleteFile(item.path);
-            });
-          });
-        }
-      }
-      const { product_image } = req.body;
-      if (product_image) {
-        await ProductImage.destroy({
-          where: {
-            product_id: id,
-          },
-        });
-        product_image.map(async (item) => {
-          await ProductImage.create({
             id: uuidv4(),
             product_id: id,
             ...item,
@@ -499,13 +472,31 @@ module.exports = {
             product_id: id,
           },
         });
-        product_size.map(async (item) => {
+        JSON.parse(product_size).map(async (item) => {
           await ProductSize.create({
             id: uuidv4(),
             product_id: id,
             ...item,
           });
         });
+      }
+
+      // Add Product Image
+      if (req.files) {
+        if (req.files.photo) {
+          req.files.photo.map(async (item) => {
+            // upload new image to google drive
+            const photoGd = await uploadGoogleDrive(item);
+            await ProductImage.create({
+              id: uuidv4(),
+              product_id: id,
+              photo: photoGd.id,
+            });
+
+            // remove photo after upload
+            deleteFile(item.path);
+          });
+        }
       }
 
       return success(res, {
@@ -567,10 +558,39 @@ module.exports = {
       const getCategory = category.map((e) => "'" + e + "'").toString();
       const getBrand = brand.map((e) => "'" + e + "'").toString();
 
-      console.log(getColor);
-      console.log(getSize);
-      console.log(getCategory);
-      console.log(getBrand);
+      let { page, limit } = req.query;
+
+      page = Number(page) || 1;
+      limit = Number(limit) || 15;
+
+      const offset = (page - 1) * limit;
+
+      const filterPage = await db.query(
+        `
+        SELECT product.id, product.product_name, product.price,
+        (
+        SELECT product_image.photo FROM product_image
+          WHERE product_image.product_id = product.id
+          LIMIT 1
+        ) AS photo
+        FROM product
+        INNER JOIN category ON product.category_id = category.id
+        INNER JOIN product_brand ON product.brand_id = product_brand.id
+        INNER JOIN product_color ON product.id = product_color.product_id
+        INNER JOIN product_image ON product.id = product_image.product_id
+        INNER JOIN product_size ON product.id = product_size.product_id
+        WHERE
+        product_color.color_name IN (${getColor})
+        OR product_size.size IN (${getSize})
+        OR product_brand.brand_name IN (${getCategory})
+        OR category.category_name IN (${getBrand})
+        AND (product.is_active = 1)
+        GROUP BY product.id, product.product_name, product.price
+        `,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
 
       const filter = await db.query(
         `
@@ -591,17 +611,22 @@ module.exports = {
         OR product_size.size IN (${getSize})
         OR product_brand.brand_name IN (${getCategory})
         OR category.category_name IN (${getBrand})
+        AND (product.is_active = 1)
         GROUP BY product.id, product.product_name, product.price
+        LIMIT ${limit}
+        OFFSET ${offset}
         `,
         {
           type: QueryTypes.SELECT,
         }
       );
 
+      const paging = pagination(filterPage.length, page, limit);
       return success(res, {
         code: 200,
-        message: 'Success get product',
+        message: `Success get all product`,
         data: filter,
+        pagination: paging.response,
       });
     } catch (error) {
       return failed(res, {

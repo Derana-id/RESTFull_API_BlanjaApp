@@ -6,6 +6,7 @@ const ProductImage = require('../models/product_image');
 const ProductSize = require('../models/product_size');
 const Address = require('../models/address');
 const Cart = require('../models/cart');
+const Store = require('../models/store.js');
 const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 const Sequelize = require('sequelize');
@@ -18,8 +19,23 @@ module.exports = {
   insertTransaction: async (req, res) => {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
-      const productId = req.params.id;
-      let { price, qty, isBuy } = req.body;
+      let { qty, isBuy, productId } = req.body;
+
+      const checkStock = await Product.findAll({
+        where: {
+          id: productId,
+        },
+      });
+
+      if (!checkStock.length) {
+        return failed(res, {
+          code: 409,
+          message: 'Id not found',
+          error: 'Insert Failed',
+        });
+      }
+
+      let price = checkStock[0].price;
 
       if (isBuy == 0) {
         const cartCheck = await Cart.findAll({
@@ -38,33 +54,16 @@ module.exports = {
 
         // set qty
         qty = cartCheck[0].qty;
-      } else {
-        const cart = {
-          id: uuidv4(),
-          user_id: userId,
-          product_id: productId,
-          qty,
-          is_active: 1,
-        };
 
-        await Cart.create(cart);
+        // delete cart id
+        await Cart.destroy({
+          where: {
+            id: cartCheck[0].id,
+          },
+        });
       }
       price = Number(price);
       qty = Number(qty);
-
-      const checkStock = await Product.findAll({
-        where: {
-          id: productId,
-        },
-      });
-
-      if (!checkStock.length) {
-        return failed(res, {
-          code: 409,
-          message: 'Id not found',
-          error: 'Insert Failed',
-        });
-      }
 
       const date = new Date();
       const dateOffset = new Date(
@@ -213,6 +212,15 @@ module.exports = {
           user_id: userId,
         },
       });
+
+      if (checkAddress.length >= 4) {
+        return failed(res, {
+          code: 409,
+          message: 'The maximum address is only four',
+          error: 'Insert Failed',
+        });
+      }
+
       if (!checkAddress.length) {
         isPrimary = 1;
       }
@@ -271,7 +279,7 @@ module.exports = {
   },
   updatePayment: async (req, res) => {
     try {
-      const userId = req.APP_DATA.tokenDecoded.id;
+      // const userId = req.APP_DATA.tokenDecoded.id;
       const transactionId = req.params.id;
       const { paymentMethod } = req.body;
 
@@ -286,33 +294,6 @@ module.exports = {
         },
       });
 
-      const checkTransactionDetail = await TransactionDetail.findAll({
-        where: {
-          transaction_id: transactionId,
-        },
-      });
-
-      const checkProduct = await Product.findAll({
-        where: {
-          id: checkTransactionDetail[0].product_id,
-        },
-      });
-
-      const checkCart = await Cart.findAll({
-        where: {
-          product_id: checkProduct[0].id,
-          user_id: userId,
-        },
-      });
-
-      const dataCart = {
-        is_active: 0,
-      };
-      await Cart.update(dataCart, {
-        where: {
-          id: checkCart[0].id,
-        },
-      });
       return success(res, {
         code: 200,
         message: `Success update transaction payment`,
@@ -331,6 +312,7 @@ module.exports = {
       const userId = req.APP_DATA.tokenDecoded.id;
       const level = req.APP_DATA.tokenDecoded.level;
       let { page, limit, search, sort, sortType } = req.query;
+      const { isPayment, status } = req.query;
       page = Number(page) || 1;
       limit = Number(limit) || 10;
       sort = sort || 'recipient_name';
@@ -357,11 +339,50 @@ module.exports = {
       let result;
 
       if (level == 2) {
+        if (isPayment == 0) {
+          result = await Transaction.findAndCountAll({
+            where: {
+              is_active: 1,
+              user_id: userId,
+              is_payment: 0,
+            },
+            order: [[`${sort}`, `${sortType}`]],
+            limit,
+            offset,
+          });
+          if (!result.count) {
+            return failed(res, {
+              code: 404,
+              message: 'Transaction Not Found',
+              error: 'Not Found',
+            });
+          }
+        }
+
+        if (isPayment == 1) {
+          result = await Transaction.findAndCountAll({
+            where: {
+              is_active: 1,
+              user_id: userId,
+              is_payment: 1,
+            },
+            order: [[`${sort}`, `${sortType}`]],
+            limit,
+            offset,
+          });
+          if (!result.count) {
+            return failed(res, {
+              code: 404,
+              message: 'Transaction Not Found',
+              error: 'Not Found',
+            });
+          }
+        }
+      } else if (level == 1) {
         result = await Transaction.findAndCountAll({
           where: {
+            status: status,
             is_active: 1,
-            user_id: userId,
-            is_payment: 0,
           },
           order: [[`${sort}`, `${sortType}`]],
           limit,
@@ -427,9 +448,16 @@ module.exports = {
                     },
                   });
 
+                  const store = await Store.findAll({
+                    where: {
+                      id: e.store_id,
+                    },
+                  });
+
                   const obj = {
                     transaction: item,
                     transactionDetail: element,
+                    store,
                     product: e,
                     color,
                     image,

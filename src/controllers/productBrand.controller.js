@@ -85,7 +85,7 @@ module.exports = {
       });
       if (!result.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Get Brand Failed',
         });
@@ -106,6 +106,7 @@ module.exports = {
   insertBrand: async (req, res) => {
     try {
       const id = uuidv4();
+
       const { brandName } = req.body;
       if (!req.file) {
         failed(res, {
@@ -120,6 +121,7 @@ module.exports = {
       if (req.file) {
         const photoGd = await uploadGoogleDrive(req.file);
         photo = photoGd.id;
+        deleteFile(req.file.path);
       }
 
       const data = {
@@ -130,6 +132,7 @@ module.exports = {
       };
 
       const result = await ProductBrand.create(data);
+
       return success(res, {
         code: 200,
         message: `Success insert Brand`,
@@ -154,7 +157,7 @@ module.exports = {
 
       if (!dataPhoto.dataValues) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Update Failed',
         });
@@ -210,7 +213,7 @@ module.exports = {
 
       if (!checkIsactive.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Delete brand Failed',
         });
