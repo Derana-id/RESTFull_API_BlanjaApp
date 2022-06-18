@@ -49,16 +49,16 @@ module.exports = (io, socket) => {
     try {
       const { sender, receiver } = data;
       const list = await db.sequelize.query(
-        `SELECT 
-        chat.id, 
-        chat.message, 
-        chat.createdAt, 
-        userSender.id AS sender_id, 
-        userReceiver.id AS receiver_id 
+        `SELECT
+        chat.id,
+        chat.message,
+        chat.createdAt,
+        userSender.id AS sender_id,
+        userReceiver.id AS receiver_id
         FROM chat
-        INNER JOIN users AS userSender ON chat.sender=userSender.id
-        INNER JOIN users AS userReceiver ON chat.receiver=userReceiver.id
-        WHERE (sender = '${sender}' AND receiver = '${receiver}') 
+        LEFT JOIN users AS userSender ON chat.sender=userSender.id
+        LEFT JOIN users AS userReceiver ON chat.receiver=userReceiver.id
+        WHERE (sender = '${sender}' AND receiver = '${receiver}')
         OR (sender = '${receiver}' AND receiver = '${sender}') ORDER BY chat.createdAt`,
         {
           type: QueryTypes.SELECT,
@@ -81,16 +81,16 @@ module.exports = (io, socket) => {
       });
 
       const list = await db.sequelize.query(
-        `SELECT 
-        chat.id, 
-        chat.message, 
-        chat.createdAt, 
-        userSender.id AS sender_id, 
-        userReceiver.id AS receiver_id 
+        `SELECT
+        chat.id,
+        chat.message,
+        chat.createdAt,
+        userSender.id AS sender_id,
+        userReceiver.id AS receiver_id
         FROM chat
-        INNER JOIN users AS userSender ON chat.sender=userSender.id
-        INNER JOIN users AS userReceiver ON chat.receiver=userReceiver.id
-        WHERE (sender = '${sender}' AND receiver = '${receiver}') 
+        LEFT JOIN users AS userSender ON chat.sender=userSender.id
+        LEFT JOIN users AS userReceiver ON chat.receiver=userReceiver.id
+        WHERE (sender = '${sender}' AND receiver = '${receiver}')
         OR (sender = '${receiver}' AND receiver = '${sender}') ORDER BY chat.createdAt`,
         {
           type: QueryTypes.SELECT,
