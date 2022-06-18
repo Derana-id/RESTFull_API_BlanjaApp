@@ -29,7 +29,7 @@ module.exports = {
 
       if (!checkStock.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Insert Failed',
         });
@@ -46,7 +46,7 @@ module.exports = {
         });
         if (!cartCheck.length) {
           return failed(res, {
-            code: 409,
+            code: 404,
             message: 'Id not found',
             error: 'Insert Failed',
           });
@@ -201,7 +201,7 @@ module.exports = {
       });
       if (!checkTransactionId.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Update Failed',
         });
@@ -559,7 +559,7 @@ module.exports = {
       });
       if (!result.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Delete Failed',
         });

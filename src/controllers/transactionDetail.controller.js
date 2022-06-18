@@ -17,7 +17,7 @@ module.exports = {
 
       if (!check.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: `Transaction id ${transactionId} not found`,
           error: 'Delete Failed',
         });
@@ -57,7 +57,7 @@ module.exports = {
 
       if (!check.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: `Detail Transaction id ${id} not found`,
           error: 'Delete Failed',
         });
