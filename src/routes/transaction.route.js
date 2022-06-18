@@ -4,7 +4,6 @@ const {
   updateTransaction,
   updatePayment,
   getAllTransaction,
-  getMyTransaction,
   getTransactionId,
   deleteTransaction,
   postNotifMidtrans,
@@ -24,7 +23,7 @@ const router = express.Router();
 router
   .post('/transaction/midtrans-notification', postNotifMidtrans)
   .post(
-    '/transaction/:id',
+    '/transaction',
     jwtAuth,
     isBuyer,
     insertValidation,
@@ -47,8 +46,7 @@ router
     validation,
     updatePayment
   )
-  .get('/transaction', jwtAuth, isAdmin, getAllTransaction)
-  .get('/mytransaction', jwtAuth, isBuyer, getMyTransaction)
+  .get('/transaction', jwtAuth, getAllTransaction)
   .get('/transaction/:id', jwtAuth, getTransactionId)
   .put('/transaction/delete/:id', jwtAuth, isBuyer, deleteTransaction);
 

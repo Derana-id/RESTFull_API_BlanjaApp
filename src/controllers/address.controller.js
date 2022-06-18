@@ -19,6 +19,7 @@ module.exports = {
       const result = await Address.findAndCountAll({
         where: {
           is_active: 1,
+          user_id: userId,
         },
         order: [[`${sort}`, `${sortType}`]],
         limit,
@@ -34,38 +35,9 @@ module.exports = {
       const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
-        message: `Success get all address by id ${userId}`,
+        message: `Success get all my address by user id ${userId}`,
         data: result.rows,
         pagination: paging.response,
-      });
-    } catch (error) {
-      return failed(res, {
-        code: 500,
-        message: error.message,
-        error: 'Internal Server Error',
-      });
-    }
-  },
-  getAllAddress: async (req, res) => {
-    try {
-      const userId = req.params.userId;
-      const result = await Address.findAll({
-        where: {
-          user_id: userId,
-          is_active: 1,
-        },
-      });
-      if (!result.length) {
-        return failed(res, {
-          code: 409,
-          message: 'Addres not found',
-          error: 'Get All Failed',
-        });
-      }
-      return success(res, {
-        code: 200,
-        message: `Success get all address by id ${userId}`,
-        data: result,
       });
     } catch (error) {
       return failed(res, {
@@ -112,6 +84,15 @@ module.exports = {
           user_id: userId,
         },
       });
+
+      if (checkAddress.length >= 4) {
+        return failed(res, {
+          code: 409,
+          message: 'The maximum address is only four',
+          error: 'Insert Failed',
+        });
+      }
+
       if (!checkAddress.length) {
         isPrimary = 1;
       }
@@ -167,6 +148,20 @@ module.exports = {
         isPrimary,
       } = req.body;
 
+      const checkIdAddress = await Address.findAll({
+        where: {
+          id,
+        },
+      });
+
+      if (!checkIdAddress.length) {
+        return failed(res, {
+          code: 404,
+          message: 'Id not found',
+          error: 'Update Failed',
+        });
+      }
+
       const checkAddress = await Address.findAll({
         where: {
           user_id: userId,
@@ -214,13 +209,7 @@ module.exports = {
           id: id,
         },
       });
-      if (!result.length) {
-        return failed(res, {
-          code: 409,
-          message: 'Id not found',
-          error: 'Update Failed',
-        });
-      }
+
       return success(res, {
         code: 200,
         message: `Success update address`,
@@ -242,7 +231,7 @@ module.exports = {
 
       if (!checkAddress) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Delete Failed',
         });
@@ -256,11 +245,7 @@ module.exports = {
         });
       }
 
-      const data = {
-        is_active: 0,
-      };
-
-      const result = await Address.update(data, {
+      await Address.destroy({
         where: {
           id: id,
         },

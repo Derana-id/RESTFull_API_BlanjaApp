@@ -5,7 +5,7 @@ const {
 } = require('../controllers/transactionDetail.controller');
 
 const jwtAuth = require('../middlewares/jwtAuth');
-const { isBuyer, isAdmin } = require('../middlewares/authorization');
+const { isBuyer } = require('../middlewares/authorization');
 
 const router = express.Router();
 

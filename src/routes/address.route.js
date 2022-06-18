@@ -1,7 +1,6 @@
 const express = require('express');
 const {
   getAllmyAddress,
-  getAllAddress,
   getAddressById,
   insertAddress,
   updateAddress,
@@ -19,7 +18,6 @@ const router = express.Router();
 
 router
   .get('/myaddress', jwtAuth, isBuyer, getAllmyAddress)
-  .get('/address/:userId', jwtAuth, getAllAddress)
   .get('/address/detail/:id', jwtAuth, getAddressById)
   .post(
     '/address',
@@ -37,6 +35,6 @@ router
     validation,
     updateAddress
   )
-  .put('/address/delete/:id', jwtAuth, isBuyer, deleteAddress);
+  .delete('/address/delete/:id', jwtAuth, isBuyer, deleteAddress);
 
 module.exports = router;

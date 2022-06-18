@@ -4,53 +4,10 @@ const { success, failed } = require('../helpers/response');
 const deleteFile = require('../utils/deleteFile');
 const Sequelize = require('sequelize');
 const pagination = require('../utils/pagination');
+const uploadGoogleDrive = require('../utils/uploadGoogleDrive');
+const deleteGoogleDrive = require('../utils/deleteGoogleDrive');
 
 module.exports = {
-  getPublicBrand: async (req, res) => {
-    try {
-      const Op = Sequelize.Op;
-      let { page, limit, search, sort, sortType } = req.query;
-      page = Number(page) || 1;
-      limit = Number(limit) || 10;
-      sort = sort || 'brand_name';
-      sortType = sortType || 'ASC';
-      const condition = search
-        ? {
-            brand_name: { [Op.iLike]: `%${search}%` },
-          }
-        : null;
-      const active = condition
-        ? { is_active: 1, ...condition }
-        : { is_active: 1 };
-      const offset = (page - 1) * limit;
-      const result = await ProductBrand.findAndCountAll({
-        where: active,
-        order: [[`${sort}`, `${sortType}`]],
-        limit,
-        offset,
-      });
-      if (!result.count) {
-        return failed(res, {
-          code: 404,
-          message: 'Brand Not Found',
-          error: 'Not Found',
-        });
-      }
-      const paging = pagination(result.count, page, limit);
-      return success(res, {
-        code: 200,
-        message: `Success get all brand`,
-        data: result.rows,
-        pagination: paging.response,
-      });
-    } catch (error) {
-      return failed(res, {
-        code: 500,
-        message: error.message,
-        error: 'Internal Server Error',
-      });
-    }
-  },
   getAllBrand: async (req, res) => {
     try {
       const Op = Sequelize.Op;
@@ -65,19 +22,44 @@ module.exports = {
           }
         : null;
       const offset = (page - 1) * limit;
-      const result = await ProductBrand.findAndCountAll({
-        where: condition,
-        order: [[`${sort}`, `${sortType}`]],
-        limit,
-        offset,
-      });
-      if (!result.count) {
-        return failed(res, {
-          code: 404,
-          message: 'Brand Not Found',
-          error: 'Not Found',
+
+      const { level } = req.APP_DATA.tokenDecoded;
+
+      let result;
+
+      if (level == 2) {
+        const active = condition
+          ? { is_active: 1, ...condition }
+          : { is_active: 1 };
+        result = await ProductBrand.findAndCountAll({
+          where: active,
+          order: [[`${sort}`, `${sortType}`]],
+          limit,
+          offset,
         });
+        if (!result.count) {
+          return failed(res, {
+            code: 404,
+            message: 'Brand Not Found',
+            error: 'Not Found',
+          });
+        }
+      } else {
+        result = await ProductBrand.findAndCountAll({
+          where: condition,
+          order: [[`${sort}`, `${sortType}`]],
+          limit,
+          offset,
+        });
+        if (!result.count) {
+          return failed(res, {
+            code: 404,
+            message: 'Brand Not Found',
+            error: 'Not Found',
+          });
+        }
       }
+
       const paging = pagination(result.count, page, limit);
       return success(res, {
         code: 200,
@@ -103,7 +85,7 @@ module.exports = {
       });
       if (!result.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Get Brand Failed',
         });
@@ -134,14 +116,21 @@ module.exports = {
         });
         return;
       }
-      
-      const image = req.file.filename;
+
+      let photo;
+      if (req.file) {
+        const photoGd = await uploadGoogleDrive(req.file);
+        photo = photoGd.id;
+        deleteFile(req.file.path);
+      }
+
       const data = {
         id: id,
         brand_name: brandName,
-        photo: image,
+        photo: photo,
         is_active: 1,
       };
+
       const result = await ProductBrand.create(data);
 
       return success(res, {
@@ -150,6 +139,9 @@ module.exports = {
         data: data,
       });
     } catch (error) {
+      if (req.file) {
+        deleteFile(req.file.path);
+      }
       return failed(res, {
         code: 500,
         message: error.message,
@@ -162,27 +154,31 @@ module.exports = {
       const id = req.params.id;
       const { brandName } = req.body;
       const dataPhoto = await ProductBrand.findByPk(id);
-      // console.log(dataPhoto.dataValues);
+
       if (!dataPhoto.dataValues) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Update Failed',
         });
       }
-      const getPhoto = dataPhoto.dataValues.photo;
-      let image;
+
+      let photo = dataPhoto.dataValues.photo;
       if (req.file) {
-        image = req.file.filename;
-        deleteFile(`public/uploads/brands/${getPhoto}`);
-      } else {
-        image = getPhoto;
+        if (photo) {
+          deleteGoogleDrive(photo);
+        }
+        const photoGd = await uploadGoogleDrive(req.file);
+        photo = photoGd.id;
+        deleteFile(req.file.path);
       }
+
       const data = {
         brand_name: brandName,
-        photo: image,
+        photo: photo,
         is_active: 1,
       };
+
       const result = await ProductBrand.update(data, {
         where: {
           id: id,
@@ -194,6 +190,9 @@ module.exports = {
         data: data,
       });
     } catch (error) {
+      if (req.file) {
+        deleteFile(req.file.path);
+      }
       return failed(res, {
         code: 500,
         message: error.message,
@@ -214,7 +213,7 @@ module.exports = {
 
       if (!checkIsactive.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Delete brand Failed',
         });
