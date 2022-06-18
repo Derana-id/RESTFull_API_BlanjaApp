@@ -124,6 +124,7 @@ module.exports = {
   insertBrand: async (req, res) => {
     try {
       const id = uuidv4();
+
       const { brandName } = req.body;
       if (!req.file) {
         failed(res, {
@@ -133,6 +134,7 @@ module.exports = {
         });
         return;
       }
+      
       const image = req.file.filename;
       const data = {
         id: id,
@@ -141,6 +143,7 @@ module.exports = {
         is_active: 1,
       };
       const result = await ProductBrand.create(data);
+
       return success(res, {
         code: 200,
         message: `Success insert Brand`,
