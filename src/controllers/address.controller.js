@@ -84,6 +84,15 @@ module.exports = {
           user_id: userId,
         },
       });
+
+      if (checkAddress.length >= 4) {
+        return failed(res, {
+          code: 409,
+          message: 'The maximum address is only four',
+          error: 'Insert Failed',
+        });
+      }
+
       if (!checkAddress.length) {
         isPrimary = 1;
       }
@@ -222,7 +231,7 @@ module.exports = {
 
       if (!checkAddress) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Delete Failed',
         });
@@ -236,11 +245,7 @@ module.exports = {
         });
       }
 
-      const data = {
-        is_active: 0,
-      };
-
-      const result = await Address.update(data, {
+      await Address.destroy({
         where: {
           id: id,
         },
