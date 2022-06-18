@@ -23,7 +23,7 @@ const router = express.Router();
 router
   .post('/transaction/midtrans-notification', postNotifMidtrans)
   .post(
-    '/transaction/:id',
+    '/transaction',
     jwtAuth,
     isBuyer,
     insertValidation,
