@@ -16,7 +16,7 @@ module.exports = {
 
       if (!checkImage.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Delete Failed',
         });

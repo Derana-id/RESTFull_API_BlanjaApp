@@ -116,7 +116,7 @@ module.exports = {
       });
       if (!result.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Get category Failed',
         });
