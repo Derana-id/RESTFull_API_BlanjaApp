@@ -120,6 +120,7 @@ module.exports = {
       if (req.file) {
         const photoGd = await uploadGoogleDrive(req.file);
         photo = photoGd.id;
+        deleteFile(req.file.path);
       }
 
       const data = {
