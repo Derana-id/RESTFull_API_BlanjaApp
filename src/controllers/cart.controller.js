@@ -118,7 +118,7 @@ module.exports = {
 
       success(res, {
         code: 200,
-        message: `Success get user by id`,
+        message: `Success get cart by id`,
         data: {
           cart: cart[0],
           product,

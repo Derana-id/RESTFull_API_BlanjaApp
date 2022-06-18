@@ -85,7 +85,7 @@ module.exports = {
       });
       if (!result.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Get Brand Failed',
         });
@@ -155,7 +155,7 @@ module.exports = {
 
       if (!dataPhoto.dataValues) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Update Failed',
         });
@@ -211,7 +211,7 @@ module.exports = {
 
       if (!checkIsactive.length) {
         return failed(res, {
-          code: 409,
+          code: 404,
           message: 'Id not found',
           error: 'Delete brand Failed',
         });
