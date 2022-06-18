@@ -18,8 +18,7 @@ module.exports = {
   insertTransaction: async (req, res) => {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
-      const productId = req.params.id;
-      let { price, qty, isBuy } = req.body;
+      let { price, qty, isBuy, productId } = req.body;
 
       if (isBuy == 0) {
         const cartCheck = await Cart.findAll({

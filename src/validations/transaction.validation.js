@@ -14,6 +14,9 @@ const insertValidation = [
   check('qty', 'qty value must number').isInt({
     min: 1,
   }),
+
+  // productId
+  check('productId', 'productId cannot be empty').not().isEmpty(),
 ];
 
 const updateValidation = [
