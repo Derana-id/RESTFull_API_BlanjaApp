@@ -331,7 +331,7 @@ module.exports = {
       const { product_color } = req.body;
       // const dataColor = JSON.parse(product_color);
       if (product_color) {
-        product_color.map(async (item) => {
+        JSON.parse(product_color).map(async (item) => {
           await ProductColor.create({
             id: uuidv4(),
             product_id: id,
@@ -341,7 +341,7 @@ module.exports = {
       }
 
       // Add Product Size
-      // const { size } = req.body;
+      const { size } = req.body;
       // let getSize;
       // if (size <= 50 && size >= 41) {
       //   getSize = 'XL';
@@ -357,10 +357,12 @@ module.exports = {
       //   getSize = 'M';
       // }
 
+      console.log(size);
+
       const { product_size } = req.body;
       // const dataSize = JSON.parse(product_size);
       if (product_size) {
-        product_size.map(async (item) => {
+        JSON.parse(product_size).map(async (item) => {
           // console.log(item.size);
           await ProductSize.create({
             id: uuidv4(),
@@ -411,7 +413,7 @@ module.exports = {
         },
       });
 
-      if (!product.length) {
+      if (!product) {
         return failed(res, {
           code: 404,
           message: `Product by id ${id} not found`,
@@ -453,49 +455,8 @@ module.exports = {
             product_id: id,
           },
         });
-        product_color.map(async (item) => {
+        JSON.parse(product_color).map(async (item) => {
           await ProductColor.create({
-            id: uuidv4(),
-            product_id: id,
-            ...item,
-          });
-        });
-      }
-
-      // Add Product Image
-      if (req.files) {
-        if (req.files.photo) {
-          await ProductImage.destroy({
-            where: {
-              product_id: id,
-            },
-          });
-          await deleteGoogleDrive(product[0].photo);
-          req.files.photo.map(async (item) => {
-            // upload new image to google drive
-            const photoGd = await uploadGoogleDrive(item);
-            product_image.map(async (item) => {
-              await ProductImage.create({
-                id: uuidv4(),
-                product_id: id,
-                photo: photoGd.id,
-              });
-
-              // remove photo after upload
-              deleteFile(item.path);
-            });
-          });
-        }
-      }
-      const { product_image } = req.body;
-      if (product_image) {
-        await ProductImage.destroy({
-          where: {
-            product_id: id,
-          },
-        });
-        product_image.map(async (item) => {
-          await ProductImage.create({
             id: uuidv4(),
             product_id: id,
             ...item,
@@ -511,13 +472,31 @@ module.exports = {
             product_id: id,
           },
         });
-        product_size.map(async (item) => {
+        JSON.parse(product_size).map(async (item) => {
           await ProductSize.create({
             id: uuidv4(),
             product_id: id,
             ...item,
           });
         });
+      }
+
+      // Add Product Image
+      if (req.files) {
+        if (req.files.photo) {
+          req.files.photo.map(async (item) => {
+            // upload new image to google drive
+            const photoGd = await uploadGoogleDrive(item);
+            await ProductImage.create({
+              id: uuidv4(),
+              product_id: id,
+              photo: photoGd.id,
+            });
+
+            // remove photo after upload
+            deleteFile(item.path);
+          });
+        }
       }
 
       return success(res, {
