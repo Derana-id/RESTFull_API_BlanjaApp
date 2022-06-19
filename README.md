@@ -10,7 +10,7 @@
   <h3 align="center">Blanja : Backend E-Commerce</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    Create a Node.js app for building e-commerce RESTful APIs using Express.
     <br />
     <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp"><strong>Explore the docs »</strong></a>
     <br />
