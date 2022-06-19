@@ -1,36 +1,55 @@
 <div id="top"></div>
-<p align="center">
+
+<!-- PROJECT LOGO -->
+<br />
 <div align="center">
-  <img src="https://lh3.googleusercontent.com/d/13oL_tdqAFzcRVAPIk0lWpAuGZQ1Dmj4d" width="500px" alt="Logo">
-</div>
+  <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp">
+    <img src="https://lh3.googleusercontent.com/d/13oL_tdqAFzcRVAPIk0lWpAuGZQ1Dmj4d" alt="Logo" width="400px">
+  </a>
+
   <h3 align="center">Blanja : Backend E-Commerce</h3>
+
   <p align="center">
+    Create a Node.js app for building e-commerce RESTful APIs using Express.
+    <br />
     <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp"><strong>Explore the docs »</strong></a>
-    <br /><br />
+    <br />
+    <br />
     <a href="blanja-app.herokuapp.com/">View Web Service</a>
     ·
     <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp/issues">Report Bug</a>
     ·
     <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp/issues">Request Feature</a>
   </p>
-</p>
+</div>
 
 <!-- TABLE OF CONTENTS -->
-## Table of Contents
-
-- [Table of Contents](#table-of-contents)
-- [About The Project](#about-the-project)
-  - [Built With](#built-with)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Requirements](#requirements)
-  - [Installation](#installation)
-  - [Setup .env example](#setup-env-example)
-- [REST API](#rest-api)
-- [Contributing](#contributing)
-- [Related Project](#related-project)
-- [Contributors](#contributors)
-- [License](#license)
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#requirements">Requirements</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#setup-env-example">Setup .env example</a></li>
+      </ul>
+    </li>
+    <li><a href="#rest-api">REST API</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#related-project">Related Project</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#contributors">Contributors</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
 
 
 <!-- ABOUT THE PROJECT -->
@@ -116,12 +135,12 @@ GOOGLE_CLIENT_ID = [GOOGLE_CLIENT_ID]
 GOOGLE_CLIENT_SECRET = [GOOGLE_CLIENT_SECRET]
 REDIRECT_URI = [REDIRECT_URI]
 GMAIL_REFRESH_TOKEN = [GMAIL_REFRESH_TOKEN]
-DRIVE_REFRESH_TOKEN=
+DRIVE_REFRESH_TOKEN = [DRIVE_REFRESH_TOKEN]
 
 # midtrans
-MT_PRODUCTION=
-MT_CLIENT_KEY=
-MT_SERVER_KEY=
+MT_PRODUCTION = [MIDTRANS_PRODUCTION]
+MT_CLIENT_KEY = [MIDTRANS_CLIENT_KEY]
+MT_SERVER_KEY = [MIDTRANS_SERVER_KEY]
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
