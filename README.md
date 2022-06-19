@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Derana-id/RESTFull_API_BlanjaApp">
-    <img src="https://lh3.googleusercontent.com/d/13oL_tdqAFzcRVAPIk0lWpAuGZQ1Dmj4d" alt="Logo" width="350">
+    <img src="https://lh3.googleusercontent.com/d/13oL_tdqAFzcRVAPIk0lWpAuGZQ1Dmj4d" alt="Logo" width="400px">
   </a>
 
   <h3 align="center">Blanja : Backend E-Commerce</h3>
