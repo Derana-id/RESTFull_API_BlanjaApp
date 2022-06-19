@@ -17,6 +17,7 @@ const {
   insertValidation,
   updateValidation,
   paymentValidation,
+  statusValidation,
 } = require('../validations/transaction.validation');
 const validation = require('../middlewares/validation');
 
@@ -48,7 +49,14 @@ router
     validation,
     updatePayment
   )
-  .put('/transaction/status/:id', jwtAuth, isSeller, updateStatus)
+  .put(
+    '/transaction/status/:id',
+    jwtAuth,
+    isSeller,
+    statusValidation,
+    validation,
+    updateStatus
+  )
   .get('/transaction', jwtAuth, getAllTransaction)
   .get('/transaction/status', jwtAuth, isSeller, getTransactionByStore)
   .get('/transaction/:id', jwtAuth, getTransactionId)
