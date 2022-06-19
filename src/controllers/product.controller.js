@@ -329,7 +329,6 @@ module.exports = {
 
       // Add Product Color
       const { product_color } = req.body;
-      // const dataColor = JSON.parse(product_color);
       if (product_color) {
         JSON.parse(product_color).map(async (item) => {
           await ProductColor.create({
@@ -341,33 +340,26 @@ module.exports = {
       }
 
       // Add Product Size
-      const { size } = req.body;
-      // let getSize;
-      // if (size <= 50 && size >= 41) {
-      //   getSize = 'XL';
-      // } else if (size <= 40 && size >= 31) {
-      //   getSize = 'L';
-      // } else if (size <= 30 && size >= 26) {
-      //   getSize = 'M';
-      // } else if (size <= 25 && size >= 21) {
-      //   getSize = 'S';
-      // } else if (size <= 20 && size >= 16) {
-      //   getSize = 'XS';
-      // } else {
-      //   getSize = 'M';
-      // }
-
-      console.log(size);
-
       const { product_size } = req.body;
-      // const dataSize = JSON.parse(product_size);
       if (product_size) {
         JSON.parse(product_size).map(async (item) => {
-          // console.log(item.size);
+          let getSize;
+          if (item.size >= 41) {
+            getSize = 'XL';
+          } else if (item.size <= 40 && item.size >= 31) {
+            getSize = 'L';
+          } else if (item.size <= 30 && item.size >= 26) {
+            getSize = 'M';
+          } else if (item.size <= 25 && item.size >= 21) {
+            getSize = 'S';
+          } else {
+            getSize = 'XS';
+          }
+
           await ProductSize.create({
             id: uuidv4(),
             product_id: id,
-            size: item.size,
+            size: getSize,
           });
         });
       }
@@ -395,6 +387,9 @@ module.exports = {
         data: null,
       });
     } catch (error) {
+      if (req.file) {
+        deleteFile(req.file.path);
+      }
       return failed(res, {
         code: 500,
         message: error.message,

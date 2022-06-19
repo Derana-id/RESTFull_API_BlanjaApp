@@ -140,7 +140,6 @@ module.exports = {
         if (element) {
           results.push(element);
         }
-        console.log(element);
       });
 
       const paging = pagination(result.count, page, limit);

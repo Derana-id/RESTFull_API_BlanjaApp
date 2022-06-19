@@ -708,7 +708,6 @@ module.exports = {
                   product_id: element.id,
                 },
               });
-              console.log(element);
 
               const dataTransactionDetail = await Promise.all(
                 transactionDetail.map(async (el) => {

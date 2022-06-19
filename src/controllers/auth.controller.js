@@ -134,8 +134,6 @@ module.exports = {
       await User.create(user);
       await Store.create(store);
 
-      console.log(name);
-
       // send email for activate account
       const templateEmail = {
         from: `"${APP_NAME}" <${EMAIL_FROM}>`,
