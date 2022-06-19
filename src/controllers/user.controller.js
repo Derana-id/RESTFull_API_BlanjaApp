@@ -332,6 +332,14 @@ module.exports = {
       }
 
       let data = [];
+      if (user[0].level == 0) {
+        obj = {
+          user: user[0],
+        };
+
+        data.push(obj);
+      }
+
       if (user[0].level == 1) {
         const store = await Store.findAll({
           where: {
