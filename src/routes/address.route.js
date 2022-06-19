@@ -35,6 +35,6 @@ router
     validation,
     updateAddress
   )
-  .delete('/address/delete/:id', jwtAuth, isBuyer, deleteAddress);
+  .delete('/address/:id', jwtAuth, isBuyer, deleteAddress);
 
 module.exports = router;

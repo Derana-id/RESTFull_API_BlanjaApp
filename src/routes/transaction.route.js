@@ -7,9 +7,11 @@ const {
   getTransactionId,
   deleteTransaction,
   postNotifMidtrans,
+  getTransactionByStore,
+  updateStatus,
 } = require('../controllers/transaction.controller');
 const jwtAuth = require('../middlewares/jwtAuth');
-const { isBuyer, isAdmin } = require('../middlewares/authorization');
+const { isBuyer, isAdmin, isSeller } = require('../middlewares/authorization');
 
 const {
   insertValidation,
@@ -46,7 +48,9 @@ router
     validation,
     updatePayment
   )
+  .put('/transaction/status/:id', jwtAuth, isSeller, updateStatus)
   .get('/transaction', jwtAuth, getAllTransaction)
+  .get('/transaction/status', jwtAuth, isSeller, getTransactionByStore)
   .get('/transaction/:id', jwtAuth, getTransactionId)
   .put('/transaction/delete/:id', jwtAuth, isBuyer, deleteTransaction);
 

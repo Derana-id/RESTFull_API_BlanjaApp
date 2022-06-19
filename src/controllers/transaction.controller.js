@@ -632,4 +632,136 @@ module.exports = {
       });
     }
   },
+  updateStatus: async (req, res) => {
+    try {
+      const transactionId = req.params.id;
+      const { status } = req.body;
+
+      const checkTransaction = await Transaction.findAll({
+        where: {
+          id: transactionId,
+          is_active: 1,
+        },
+      });
+
+      if (!checkTransaction.length) {
+        return failed(res, {
+          code: 404,
+          message: `Id ${transactionId} not found`,
+          error: 'Update status Failed',
+        });
+      }
+
+      const data = {
+        status,
+      };
+      await Transaction.update(data, {
+        where: {
+          id: transactionId,
+        },
+      });
+
+      return success(res, {
+        code: 200,
+        message: 'Update Status Transaction Successfully',
+        data: [],
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  getTransactionByStore: async (req, res) => {
+    try {
+      const userId = req.APP_DATA.tokenDecoded.id;
+
+      const store = await Store.findAll({
+        where: {
+          user_id: userId,
+        },
+      });
+
+      if (!store.length) {
+        return failed(res, {
+          code: 404,
+          message: `Store with user id ${userId} not found`,
+          error: 'Get transaction by product store failed',
+        });
+      }
+
+      let getData = [];
+      const data = await Promise.all(
+        store.map(async (item) => {
+          const product = await Product.findAll({
+            where: {
+              store_id: item.id,
+            },
+          });
+
+          const dataProduct = await Promise.all(
+            product.map(async (element) => {
+              const transactionDetail = await TransactionDetail.findAll({
+                where: {
+                  product_id: element.id,
+                },
+              });
+              console.log(element);
+
+              const dataTransactionDetail = await Promise.all(
+                transactionDetail.map(async (el) => {
+                  const transaction = await Transaction.findAll({
+                    where: {
+                      id: el.transaction_id,
+                    },
+                  });
+
+                  const color = await ProductColor.findAll({
+                    where: {
+                      product_id: element.id,
+                    },
+                  });
+
+                  const image = await ProductImage.findAll({
+                    where: {
+                      product_id: element.id,
+                    },
+                  });
+
+                  const size = await ProductSize.findAll({
+                    where: {
+                      product_id: element.id,
+                    },
+                  });
+
+                  const obj = {
+                    transaction,
+                    product: element,
+                    color,
+                    size,
+                    image,
+                  };
+
+                  return getData.push(obj);
+                })
+              );
+            })
+          );
+        })
+      );
+      return success(res, {
+        code: 200,
+        message: 'Get All Transaction Success',
+        data: getData,
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
 };
