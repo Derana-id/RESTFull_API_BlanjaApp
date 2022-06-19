@@ -26,4 +26,19 @@ const paymentValidation = [
   }),
 ];
 
-module.exports = { insertValidation, updateValidation, paymentValidation };
+const statusValidation = [
+  // status
+  check('status', 'status cannot be empty').not().isEmpty(),
+  check('status', 'status only number').isNumeric(),
+  check('status', 'status only number').isInt({
+    min: 0,
+    max: 4,
+  }),
+];
+
+module.exports = {
+  insertValidation,
+  updateValidation,
+  paymentValidation,
+  statusValidation,
+};
