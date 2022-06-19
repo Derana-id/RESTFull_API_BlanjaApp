@@ -184,15 +184,7 @@ module.exports = {
     try {
       const userId = req.APP_DATA.tokenDecoded.id;
       const transactionId = req.params.id;
-      let {
-        label,
-        recipientName,
-        recipientPhone,
-        address,
-        postalCode,
-        city,
-        isPrimary,
-      } = req.body;
+      let { addressId } = req.body;
 
       const checkTransactionId = await Transaction.findAll({
         where: {
@@ -209,61 +201,33 @@ module.exports = {
 
       const checkAddress = await Address.findAll({
         where: {
-          user_id: userId,
+          id: addressId,
         },
       });
-
-      if (checkAddress.length >= 4) {
-        return failed(res, {
-          code: 409,
-          message: 'The maximum address is only four',
-          error: 'Insert Failed',
-        });
-      }
-
       if (!checkAddress.length) {
-        isPrimary = 1;
-      }
-
-      if (isPrimary === 1) {
-        const setPrimary = {
-          is_primary: 0,
-        };
-        await Address.update(setPrimary, {
-          where: {
-            user_id: userId,
-          },
+        return failed(res, {
+          code: 404,
+          message: `Id addres ${addressId} not found`,
+          error: 'Update Failed',
         });
       }
 
       const dataTransaction = {
-        label: label,
-        recipient_name: recipientName,
-        recipient_phone: recipientPhone,
-        address: address,
-        postal_code: postalCode,
-        city: city,
+        label: checkAddress[0].label,
+        recipient_name: checkAddress[0].recipient_name,
+        recipient_phone: checkAddress[0].recipient_phone,
+        address: checkAddress[0].address,
+        postal_code: checkAddress[0].postal_code,
+        city: checkAddress[0].city,
       };
 
-      const addressId = uuidv4();
-      const dataAddress = {
-        id: addressId,
-        user_id: userId,
-        label: label,
-        recipient_name: recipientName,
-        recipient_phone: recipientPhone,
-        address: address,
-        postal_code: postalCode,
-        city: city,
-        is_primary: isPrimary,
-        is_active: 1,
-      };
-      await Address.create(dataAddress);
-      const updateTransaction = await Transaction.update(dataTransaction, {
+      await Transaction.update(dataTransaction, {
         where: {
-          id: transactionId,
+          user_id: userId,
+          is_payment: 0,
         },
       });
+
       return success(res, {
         code: 200,
         message: `Success update transaction`,

@@ -30,7 +30,7 @@ router
     updateProfile
   )
   .put(
-    '/user/srore',
+    '/user/store',
     jwtAuth,
     isSeller,
     upload,

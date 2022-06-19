@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const { success, failed } = require('../helpers/response');
 const Chat = require('../models/chat');
 const Profile = require('../models/profile');
+const Store = require('../models/store');
 const User = require('../models/user');
 const db = require('../config/pg');
 const { QueryTypes } = require('sequelize');
@@ -41,16 +42,21 @@ module.exports = {
     try {
       const { id, level } = req.APP_DATA.tokenDecoded;
 
-      const user = await User.findAll();
-      if (!user.length) {
-        return failed(res, {
-          code: 404,
-          message: `Data not found`,
-          error: 'Not Found',
-        });
-      }
-
       if (level == 2) {
+        const user = await User.findAll({
+          where: {
+            level: 1,
+          },
+        });
+        if (!user.length) {
+          return failed(res, {
+            code: 404,
+            message: `Data not found`,
+            error: 'Not Found',
+          });
+        }
+
+        let getData = [];
         const data = await Promise.all(
           user.map(async (item) => {
             const list = await db.query(
@@ -65,27 +71,46 @@ module.exports = {
               }
             );
 
-            // const dataUser = await User.findAll({
-            //   where: {
-            //     id: list.receiver,
-            //   },
-            // });
+            const listData = await Promise.all(
+              list.map(async (element) => {
+                const store = await Store.findAll({
+                  where: {
+                    user_id: item.id,
+                  },
+                });
 
-            const obj = {
-              user: item,
-              message: list,
-            };
+                const obj = {
+                  user: item,
+                  store,
+                  message: list,
+                };
 
-            return obj;
+                return getData.push(obj);
+              })
+            );
           })
         );
 
         success(res, {
           code: 200,
           message: `Success get user`,
-          data,
+          data: getData,
         });
       } else {
+        const user = await User.findAll({
+          where: {
+            level: 2,
+          },
+        });
+        if (!user.length) {
+          return failed(res, {
+            code: 404,
+            message: `Data not found`,
+            error: 'Not Found',
+          });
+        }
+
+        let getData = [];
         const data = await Promise.all(
           user.map(async (item) => {
             const list = await db.query(
@@ -100,19 +125,30 @@ module.exports = {
               }
             );
 
-            const obj = {
-              user: item,
-              message: list,
-            };
+            const listData = await Promise.all(
+              list.map(async (element) => {
+                const profile = await Profile.findAll({
+                  where: {
+                    user_id: item.id,
+                  },
+                });
 
-            return obj;
+                const obj = {
+                  user: item,
+                  profile,
+                  message: list,
+                };
+
+                return getData.push(obj);
+              })
+            );
           })
         );
 
         success(res, {
           code: 200,
           message: `Success get user`,
-          data,
+          data: getData,
         });
       }
     } catch (error) {
