@@ -149,9 +149,9 @@ MT_SERVER_KEY = [MIDTRANS_SERVER_KEY]
 
 ## REST API
 
-You can view my Postman collection [here](https://www.postman.com/warped-shadow-374852/workspace/blanja/overview)
+You can view my Postman collection [here](https://www.postman.com/warped-shadow-374852/workspace/e-commerce/overview)
 </br>
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/19659051-cdd14dbd-b11b-492b-b4b5-83065267d690?action=collection%2Ffork&collection-url=entityId%3D19659051-cdd14dbd-b11b-492b-b4b5-83065267d690%26entityType%3Dcollection%26workspaceId%3D2d0c24df-fbb7-405f-93af-c4ef984f8428)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/20204010-9bbf1514-fc7c-4c49-b41b-678b052dea35?action=collection%2Ffork&collection-url=entityId%3D20204010-9bbf1514-fc7c-4c49-b41b-678b052dea35%26entityType%3Dcollection%26workspaceId%3D2d0c24df-fbb7-405f-93af-c4ef984f8428)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
