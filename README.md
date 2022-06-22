@@ -177,9 +177,9 @@ Contributions are what make the open source community such an amazing place to b
 
 :rocket: [`Web Service`](blanja-app.herokuapp.com/)
 
-:rocket: [`Demo Blanja`]()
+:rocket: [`Demo Blanja`](https://bit.ly/blanja-app/)
 
-:rocket: [`Demo Blanja Admin`]()
+:rocket: [`Demo Blanja Admin`](https://blanja-admin.vercel.app/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
