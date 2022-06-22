@@ -58,7 +58,7 @@
 Create a Node.js app for building e-commerce RESTful APIs using Express.
 
 ### Built With
-
+This app was built with some technologies below:
 - [Node.js](https://nodejs.org/en/)
 - [Express.js](https://expressjs.com/)
 - [JSON Web Tokens](https://jwt.io/)
@@ -67,6 +67,8 @@ Create a Node.js app for building e-commerce RESTful APIs using Express.
 - [Sequelize](https://sequelize.org/)
 - [PostgreSQL](https://www.postgresql.org/)
 - and other
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Getting Started
