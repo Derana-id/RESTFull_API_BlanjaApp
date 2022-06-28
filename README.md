@@ -175,7 +175,7 @@ Contributions are what make the open source community such an amazing place to b
 
 :rocket: [`Frontend Blanja Admin`](https://github.com/Derana-id/Front-End-Admin)
 
-:rocket: [`Web Service`](blanja-app.herokuapp.com/)
+:rocket: [`Web Service`](https://blanja-app.herokuapp.com/)
 
 :rocket: [`Demo Blanja`](https://bit.ly/blanja-app)
 
