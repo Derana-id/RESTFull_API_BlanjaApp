@@ -46,7 +46,7 @@
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#related-project">Related Project</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#contributors">Contributors</a></li>
+    <li><a href="#our-team">Our Team</a></li>
     <li><a href="#license">License</a></li>
   </ol>
 </details>
@@ -183,10 +183,25 @@ Contributions are what make the open source community such an amazing place to b
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Contributors
+## Our Team
+
 <center>
   <table>
     <tr>
+      <td align="center">
+        <a href="https://github.com/hakamfaza">
+          <img width="100" src="https://avatars.githubusercontent.com/u/75160713?v=4" alt="Muhammad Hakam Faza"><br/>
+          <sub><b>Muhamad Hakam Faza</b></sub> <br/>
+          <sub>Project Manager | Front End Web Developer</sub>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/hanifudin0597">
+          <img width="100" src="https://avatars.githubusercontent.com/u/47863909?v=4" alt="Hanifudin Alfauzi"><br/>
+          <sub><b>Hanifudin Alfauzi</b></sub> <br/>
+          <sub>Front End Web Developer</sub>
+        </a>
+      </td>
       <td align="center">
         <a href="https://github.com/altrawan">
           <img width="100" src="https://avatars.githubusercontent.com/u/39686865?v=4" alt="Nur Muhammad Alif Putra Setiawan"><br/>
@@ -199,6 +214,13 @@ Contributions are what make the open source community such an amazing place to b
           <img width="100" src="https://avatars.githubusercontent.com/u/87940197?v=4" alt="Rif'an Hidayatulloh"><br/>
           <sub><b>Rif'an Hidayatulloh</b></sub> <br/>
           <sub>Back End Web Developer</sub>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/bagus25dzikri06">
+          <img width="100" src="https://avatars.githubusercontent.com/u/18045292?v=4" alt="Bagus Dzikri Hidayat"><br/>
+          <sub><b>Bagus Dzikri Hidayat</b></sub> <br/>
+          <sub>Front End Web Developer</sub>
         </a>
       </td>
     </tr>
